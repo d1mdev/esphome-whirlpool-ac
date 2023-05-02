@@ -32,7 +32,7 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
-void WhirlpoolClimate::transmit_state() {
+void WhirlpoolClimateAC::transmit_state() {
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   remote_state[0] = 0x83;
   remote_state[1] = 0x06;
@@ -148,7 +148,7 @@ void WhirlpoolClimate::transmit_state() {
   transmit.perform();
 }
 
-bool WhirlpoolClimate::on_receive(remote_base::RemoteReceiveData data) {
+bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
     ESP_LOGV(TAG, "Header fail");
