@@ -148,7 +148,7 @@ void WhirlpoolClimateAC::transmit_state() {
   data->mark(WHIRLPOOL_BIT_MARK);
   
   time(&timer_received);  /* get current time; same as: timer = time(NULL)  */
-  ESP_LOGD(TAG, "Time of send fixed i", timer_received);
+  ESP_LOGD(TAG, "Time of send fixed %d", timer_received);
   transmit.perform();
 }
 
