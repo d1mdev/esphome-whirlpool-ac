@@ -32,6 +32,8 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
+static bool receive_ignore = false;
+
 void WhirlpoolClimateAC::transmit_state() {
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   remote_state[0] = 0x83;
