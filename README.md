@@ -21,4 +21,4 @@ climate:
       temperature_step: 1
 ```
 # to-do
-Implement wired power-assumed
+* Implement wired powered_on_assumed
