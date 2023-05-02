@@ -6,10 +6,10 @@ from esphome.const import CONF_ID, CONF_MODEL
 AUTO_LOAD = ["climate_ir"]
 CODEOWNERS = ["@glmnet"]
 
-whirlpool_ns = cg.esphome_ns.namespace("whirlpool")
-WhirlpoolClimate = whirlpool_ns.class_("WhirlpoolClimate", climate_ir.ClimateIR)
+whirlpool_ac_ns = cg.esphome_ns.namespace("whirlpool_ac")
+WhirlpoolClimateAC = whirlpool_ac_ns.class_("WhirlpoolClimateAC", climate_ir.ClimateIR)
 
-Model = whirlpool_ns.enum("Model")
+Model = whirlpool_ac_ns.enum("Model")
 MODELS = {
     "DG11J1-3A": Model.MODEL_DG11J1_3A,
     "DG11J1-91": Model.MODEL_DG11J1_91,
@@ -17,7 +17,7 @@ MODELS = {
 
 CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
     {
-        cv.GenerateID(): cv.declare_id(WhirlpoolClimate),
+        cv.GenerateID(): cv.declare_id(WhirlpoolClimateAC),
         cv.Optional(CONF_MODEL, default="DG11J1-3A"): cv.enum(MODELS, upper=True),
     }
 )
