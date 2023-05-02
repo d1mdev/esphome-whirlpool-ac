@@ -153,6 +153,13 @@ void WhirlpoolClimateAC::transmit_state() {
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
+  // Check if it was internal initiated transmission
+  if (receive_ignore) {
+    ESP_LOGD(TAG, "See IR transmission. Receive ignore is %02X", receive_ignore);
+    receive_ignore = false;
+    return false;
+  }
+  
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
     ESP_LOGV(TAG, "Header fail");
