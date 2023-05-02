@@ -32,7 +32,7 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
-static bool receive_ignore = false;
+static time_t timer_received;
 
 void WhirlpoolClimateAC::transmit_state() {
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
@@ -146,17 +146,16 @@ void WhirlpoolClimateAC::transmit_state() {
   }
   // Footer
   data->mark(WHIRLPOOL_BIT_MARK);
-  ESP_LOGD(TAG, "Receive ignore is %02X", receive_ignore);
-  receive_ignore = true;
-  ESP_LOGD(TAG, "Receive ignore is %02X", receive_ignore);
+  
+  time(&timer_received);  /* get current time; same as: timer = time(NULL)  */
+  ESP_LOGD(TAG, "Time of send fixed i", timer_received);
   transmit.perform();
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   // Check if it was internal initiated transmission
-  if (receive_ignore) {
-    ESP_LOGD(TAG, "See IR transmission. Receive ignore is %02X", receive_ignore);
-    receive_ignore = false;
+  if (difftime(timer_received,time(NULL)) < 1) {
+    ESP_LOGD(TAG, "See IR transmission. Ignoring");
     return false;
   }
   
@@ -292,7 +291,6 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
     }
   }
 
-  receive_ignore = false;
   this->publish_state();
   return true;
 }
