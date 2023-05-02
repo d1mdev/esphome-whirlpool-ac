@@ -146,7 +146,9 @@ void WhirlpoolClimateAC::transmit_state() {
   }
   // Footer
   data->mark(WHIRLPOOL_BIT_MARK);
-
+  ESP_LOGD(TAG, "Receive ignore is %02X", receive_ignore);
+  receive_ignore = true;
+  ESP_LOGD(TAG, "Receive ignore is %02X", receive_ignore);
   transmit.perform();
 }
 
