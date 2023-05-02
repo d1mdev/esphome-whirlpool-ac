@@ -20,3 +20,5 @@ climate:
       max_temperature: 30
       temperature_step: 1
 ```
+# to-do
+Implement wired power-assumed
