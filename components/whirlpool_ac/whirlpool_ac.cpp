@@ -292,6 +292,7 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
     }
   }
 
+  receive_ignore = false;
   this->publish_state();
   return true;
 }
