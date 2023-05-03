@@ -1,6 +1,5 @@
 #include "whirlpool_ac.h"
 #include "esphome/core/log.h"
-#include <ctime>
 
 namespace esphome {
 namespace whirlpool_ac {
