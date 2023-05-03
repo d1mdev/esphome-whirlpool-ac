@@ -33,6 +33,11 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
 static time_t timer_received;
+struct tm y2k = {0};
+y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
+y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
+timer_received = mktime(&y2k);
+ESP_LOGD("Initial timer: %.f", timer_received.timestamp());
 
 void WhirlpoolClimateAC::transmit_state() {
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
