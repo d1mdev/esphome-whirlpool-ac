@@ -32,13 +32,6 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
-static time_t timer_received;
-struct tm y2k = {0};
-y2k.tm_hour = 0;   y2k.tm_min = 0; y2k.tm_sec = 0;
-y2k.tm_year = 100; y2k.tm_mon = 0; y2k.tm_mday = 1;
-timer_received = mktime(&y2k);
-ESP_LOGD("Initial timer: %.f", timer_received.timestamp());
-
 void WhirlpoolClimateAC::transmit_state() {
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   remote_state[0] = 0x83;
@@ -151,19 +144,11 @@ void WhirlpoolClimateAC::transmit_state() {
   }
   // Footer
   data->mark(WHIRLPOOL_BIT_MARK);
-  
-  time(&timer_received);  /* get current time; same as: timer = time(NULL)  */
 
   transmit.perform();
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
-  // Check if it was internal initiated transmission
-  if (difftime(timer_received,time(NULL)) < 1) {
-    ESP_LOGD(TAG, "See IR transmission. Ignoring");
-    return false;
-  }
-  
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
     ESP_LOGV(TAG, "Header fail");
