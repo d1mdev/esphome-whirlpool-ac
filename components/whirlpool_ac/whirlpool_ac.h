@@ -45,7 +45,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool powered_on_assumed;
 
   // used to track pause between send and receive IR commands 
-  time_t t_receive, t_transmit;
+  long int t_receive, t_transmit;
 
  protected:
   /// Transmit via IR the state of this climate controller.
