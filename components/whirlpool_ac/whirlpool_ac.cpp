@@ -127,7 +127,7 @@ void WhirlpoolClimateAC::transmit_state() {
   auto transmit = this->transmitter_->transmit();
   auto *data = transmit.get_data();
 
-  data->set_carrier_frequency(38000);
+  data->set_carrier_frequency(WHIRLPOOL_CARRIER_FREQUENCY);
 
   // Header
   data->mark(WHIRLPOOL_HEADER_MARK);
@@ -150,13 +150,17 @@ void WhirlpoolClimateAC::transmit_state() {
   // Footer
   data->mark(WHIRLPOOL_BIT_MARK);
 
+  // Place to set t_transmit value
+  //
+
   transmit.perform();
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
-  //
+  // Place to check time diff from last IR transmission
+  // If it less than 1 sec, just ignore command 
   // time(&t_receive);
-  // ESP_LOGD(TAG, "Last transmit was %02X", difftime(t_receive, t_transmit));
+  // ESP_LOGD(TAG, "Last transmit was %02X sec ago.", difftime(t_receive, t_transmit));
 
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
