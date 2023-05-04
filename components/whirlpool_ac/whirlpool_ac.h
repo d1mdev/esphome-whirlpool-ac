@@ -1,6 +1,7 @@
 #pragma once
 
 #include "esphome/components/climate_ir/climate_ir.h"
+#include <time.h>
 
 namespace esphome {
 namespace whirlpool_ac {
