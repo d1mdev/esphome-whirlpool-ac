@@ -17,9 +17,6 @@ const float WHIRLPOOL_DG11J1_3A_TEMP_MIN = 18.0;
 const float WHIRLPOOL_DG11J1_91_TEMP_MAX = 30.0;
 const float WHIRLPOOL_DG11J1_91_TEMP_MIN = 16.0;
 
-// 
-time_t t_receive, t_transmit;
-
 class WhirlpoolClimateAC : public climate_ir::ClimateIR {
  public:
   WhirlpoolClimateAC()
@@ -45,6 +42,9 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
   // used to track when to send the power toggle command
   bool powered_on_assumed;
+
+  // used to track pause between send and receive IR commands 
+  time_t t_receive, t_transmit;
 
  protected:
   /// Transmit via IR the state of this climate controller.
