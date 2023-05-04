@@ -159,8 +159,8 @@ void WhirlpoolClimateAC::transmit_state() {
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   // Place to check time diff from last IR transmission
   // If it less than 1 sec, just ignore command 
-  // time(&t_receive);
-  // ESP_LOGD(TAG, "Last transmit was %02X sec ago.", difftime(t_receive, t_transmit));
+  time(&t_receive);
+  ESP_LOGD(TAG, "Last transmit was %02X sec ago.", difftime(t_receive, t_transmit));
 
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
