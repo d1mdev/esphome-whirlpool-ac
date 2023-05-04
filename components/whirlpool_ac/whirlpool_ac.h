@@ -17,6 +17,9 @@ const float WHIRLPOOL_DG11J1_3A_TEMP_MIN = 18.0;
 const float WHIRLPOOL_DG11J1_91_TEMP_MAX = 30.0;
 const float WHIRLPOOL_DG11J1_91_TEMP_MIN = 16.0;
 
+// 
+time_t t_receive, t_transmit;
+
 class WhirlpoolClimateAC : public climate_ir::ClimateIR {
  public:
   WhirlpoolClimateAC()
@@ -29,6 +32,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     climate_ir::ClimateIR::setup();
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+    this->t_transmit = time(NULL);
   }
 
   /// Override control to change settings of the climate device.
