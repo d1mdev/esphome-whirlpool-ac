@@ -29,7 +29,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     climate_ir::ClimateIR::setup();
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
-    t_transmit = time(NULL);
+    this->t_transmit = time(NULL);
   }
 
   /// Override control to change settings of the climate device.
