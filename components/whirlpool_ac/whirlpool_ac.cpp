@@ -151,7 +151,7 @@ void WhirlpoolClimateAC::transmit_state() {
   data->mark(WHIRLPOOL_BIT_MARK);
 
   // Place to set t_transmit value
-  //
+  // time(&this->t_transmit);
 
   transmit.perform();
 }
