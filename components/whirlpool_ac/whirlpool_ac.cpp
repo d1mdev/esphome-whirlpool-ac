@@ -1,12 +1,12 @@
 #include "whirlpool_ac.h"
 #include "esphome/core/log.h"
-#include "time.h"
+// #include "time.h"
 
 namespace esphome {
 namespace whirlpool_ac {
 
 static const char *const TAG = "whirlpool_ac.climate";
-time_t t_transmit, t_receive;
+// time_t t_transmit, t_receive;
 
 const uint16_t WHIRLPOOL_HEADER_MARK = 9000;
 const uint16_t WHIRLPOOL_HEADER_SPACE = 4494;
@@ -35,7 +35,7 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
 // set initial value at start
-time(&t_transmit);
+// time(&t_transmit);
 
 void WhirlpoolClimateAC::transmit_state() {
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
