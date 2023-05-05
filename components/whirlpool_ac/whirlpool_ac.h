@@ -30,8 +30,10 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     climate_ir::ClimateIR::setup();
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
-    this->t_transmit = time(NULL);
-    ESP_LOGD("Started setup class");
+    // Or set to 0 at setup stage
+    this->t_transmit = timestamp_now();
+    //this->t_transmit = esphome::time::ESPTime::timestamp;
+    //ESP_LOGD("Started setup class");
   }
 
   /// Override control to change settings of the climate device.
@@ -47,6 +49,8 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
   // used to track pause between send and receive IR commands 
   time_t t_receive, t_transmit;
+  
+  time_t timestamp_now() { return ::time(nullptr); }
 
  protected:
   /// Transmit via IR the state of this climate controller.
