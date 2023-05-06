@@ -1,6 +1,5 @@
 #include "whirlpool_ac.h"
 #include "esphome/core/log.h"
-// #include "time.h"
 
 namespace esphome {
 namespace whirlpool_ac {
@@ -156,7 +155,8 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   // Place to check time diff from last IR transmission
   // If it less than 1 sec, just ignore command 
   t_receive = this->timestamp_now();
-  ESP_LOGD(TAG, "t_transmit: %02X , t_receive: %02X , diff: %.f", t_transmit, t_receive, ::difftime(t_receive, t_transmit));
+  auto t_diff = ::abs(::difftime(t_receive, t_transmit));
+  ESP_LOGD(TAG, "t_transmit: %02X , t_receive: %02X , diff: %.f", t_transmit, t_receive, t_diff);
 
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
