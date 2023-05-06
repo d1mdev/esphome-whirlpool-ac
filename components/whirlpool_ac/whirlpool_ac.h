@@ -51,6 +51,13 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   time_t t_receive, t_transmit;
   
   time_t timestamp_now() { return ::time(nullptr); }
+  
+  // used for send OFF state to HA in case out of sync
+  void send_off() {
+    this->mode = climate::CLIMATE_MODE_OFF;
+    this->powered_on_assumed = false;
+    this->publish_state();
+  }
 
  protected:
   /// Transmit via IR the state of this climate controller.
