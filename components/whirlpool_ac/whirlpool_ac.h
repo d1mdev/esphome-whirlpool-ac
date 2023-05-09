@@ -56,6 +56,10 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   void send_off() {
     this->mode = climate::CLIMATE_MODE_OFF;
     this->powered_on_assumed = false;
+    this->target_temperature = 21;
+    this->fan_mode = climate::CLIMATE_FAN_AUTO;
+    this->swing_mode = climate::CLIMATE_SWING_OFF;
+    // this->name_
     this->publish_state();
   }
 
