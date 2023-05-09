@@ -56,7 +56,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     char strftime_buf[64];
     struct tm timeinfo;
 
-    time(&now);
+    ::time(&now);
     // Set timezone to China Standard Time
     setenv("TZ", "CST-8", 1);
     tzset();
