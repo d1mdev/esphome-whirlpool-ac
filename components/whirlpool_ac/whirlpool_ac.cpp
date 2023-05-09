@@ -149,7 +149,7 @@ void WhirlpoolClimateAC::transmit_state() {
   ::time(&t_transmit);
   //this->t_transmit = this->timestamp_now();
   //ESP_LOGD(TAG, "Transmitter mute state is %02X", esphome::binary_sensor::BinarySensor(climate_ir_muted).state);
-  if (this->ir_sensor_ != nullptr && this->ir_sensor_->state == "On") {
+  if (this->ir_sensor_ != nullptr && this->ir_sensor_->state) {
      transmit.perform();
   }
 }
