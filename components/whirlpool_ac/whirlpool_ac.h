@@ -31,9 +31,9 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
     // Or set to 0 at setup stage
-    this->t_transmit = timestamp_now();
+    this->t_transmit = this->timestamp_now();
     //this->t_transmit = esphome::time::ESPTime::timestamp;
-    //ESP_LOGD("Started setup class");
+    ESP_LOGD("TAG", "Started setup class. t_transmit - %s", ctime(this->t_transmit));
   }
 
   /// Override control to change settings of the climate device.
