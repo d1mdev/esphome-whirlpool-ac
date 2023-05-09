@@ -161,7 +161,7 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   auto t_diff = ::difftime(t_receive, t_transmit);
   ESP_LOGD(TAG, "t_transmit: %s , t_receive: %s , diff: %f", ctime(&t_transmit), ctime(&t_receive), t_diff);
   if (::abs(t_diff) < 1) {
-    ESP_LOGD(TAG, "t_transmit: %02X , t_receive: %02X , diff: %.f", t_transmit, t_receive, t_diff);
+    ESP_LOGD(TAG, "t_transmit: %u , t_receive: %u , diff: %.f", t_transmit, t_receive, t_diff);
     return false;
   }
 
