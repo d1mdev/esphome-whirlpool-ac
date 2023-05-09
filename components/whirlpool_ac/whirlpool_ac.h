@@ -63,7 +63,8 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-    ESP_LOGD("TAG", "The current date/time in Moscow is: %s", strftime_buf);
+    //ESP_LOGD("TAG", "The current date/time in Moscow is: %s", strftime_buf);
+    ESP_LOGD("TAG", "The current date/time in Moscow is: %s", ctime(&now));
     return now;
   }
   
