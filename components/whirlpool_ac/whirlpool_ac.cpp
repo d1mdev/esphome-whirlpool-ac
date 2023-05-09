@@ -156,8 +156,8 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   // If it less than 1 sec, just ignore command 
   this->t_receive = this->timestamp_now();
   //auto t_diff = ::abs(::difftime(t_receive, t_transmit));
-  double this->t_diff = ::difftime(this->t_receive, this->t_transmit);
-  ESP_LOGD(TAG, "t_transmit: %f , t_receive: %f , diff: %f", this->t_transmit, this->t_receive, this->t_diff);
+  double t_diff = ::difftime(this->t_receive, this->t_transmit);
+  ESP_LOGD(TAG, "t_transmit: %f , t_receive: %f , diff: %f", this->t_transmit, this->t_receive, t_diff);
   if (t_diff < 1) {
     ESP_LOGD(TAG, "t_transmit: %02X , t_receive: %02X , diff: %.f", t_transmit, t_receive, t_diff);
     return false;
