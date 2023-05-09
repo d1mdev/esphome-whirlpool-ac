@@ -51,7 +51,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   time_t t_receive, t_transmit;
   
   //time_t timestamp_now() { return ::time(nullptr); }
-  auto timestamp_new() {
+  auto timestamp_now() {
     time_t now;
     char strftime_buf[64];
     struct tm timeinfo;
@@ -64,7 +64,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
     ESP_LOGD(TAG, "The current date/time in Shanghai is: %s", strftime_buf);
-    return strftime_buf;
+    return now;
   }
   
   // used for send OFF state to HA in case out of sync
