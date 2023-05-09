@@ -148,7 +148,7 @@ void WhirlpoolClimateAC::transmit_state() {
   // Place to set t_transmit value
   t_transmit = this->timestamp_now();
 
-  transmit.perform();
+  // transmit.perform();
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
