@@ -147,7 +147,7 @@ void WhirlpoolClimateAC::transmit_state() {
 
   // Place to set t_transmit value
   t_transmit = this->timestamp_now();
-
+  ESP_LOGD(TAG, "Transmitter mute state is %02X", id(climate_ir_muted).state);
   // transmit.perform();
 }
 
