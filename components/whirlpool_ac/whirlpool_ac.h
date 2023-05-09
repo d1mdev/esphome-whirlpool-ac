@@ -73,6 +73,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
   bool send_swing_cmd_{false};
   Model model_;
+  sensor::Sensor *ir_sensor_{nullptr};
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
