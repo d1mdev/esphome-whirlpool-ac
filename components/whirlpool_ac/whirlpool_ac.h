@@ -62,6 +62,8 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     // this->name_
     this->publish_state();
   }
+  
+  void set_ir_sensor(sensor::Sensor *ir_sensor) { this->ir_sensor_ = ir_sensor; }
 
  protected:
   /// Transmit via IR the state of this climate controller.
