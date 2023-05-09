@@ -51,7 +51,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   time_t t_receive, t_transmit;
   
   //time_t timestamp_now() { return ::time(nullptr); }
-  auto timestamp_now() {
+  time_t timestamp_now() {
     time_t now;
     char strftime_buf[64];
     struct tm timeinfo;
