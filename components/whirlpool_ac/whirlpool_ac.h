@@ -58,12 +58,12 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
     ::time(&now);
     // Set timezone to China Standard Time
-    setenv("TZ", "CST-8", 1);
+    setenv("TZ", "UTC+3", 1);
     tzset();
 
     localtime_r(&now, &timeinfo);
     strftime(strftime_buf, sizeof(strftime_buf), "%c", &timeinfo);
-    ESP_LOGD("TAG", "The current date/time in Shanghai is: %s", strftime_buf);
+    ESP_LOGD("TAG", "The current date/time in Moscow is: %s", strftime_buf);
     return now;
   }
   
