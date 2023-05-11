@@ -32,6 +32,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
     // Or set to 0 at setup stage
     ::time(&t_transmit);
+    mute_ir_transmitter = false;
     //this->t_transmit = esphome::time::ESPTime::timestamp;
     ESP_LOGD("TAG", "Started setup class. t_transmit - %u", this->t_transmit);
   }
@@ -70,6 +71,12 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   }
   
   // used for send OFF state to HA in case out of sync
+  bool mute_ir_transmitter;
+  
+  void set_mute_ir_receiver(bool rcvr_state) {
+    this->mute_ir_receiver = rcvr_state;
+  }
+  
   void send_off() {
     this->mode = climate::CLIMATE_MODE_OFF;
     this->powered_on_assumed = false;
