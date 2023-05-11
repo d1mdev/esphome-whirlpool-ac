@@ -74,7 +74,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool mute_ir_transmitter;
   
   void set_mute_ir_receiver(bool rcvr_state) {
-    this->mute_ir_receiver = rcvr_state;
+    this->mute_ir_receiver_ = rcvr_state;
   }
   
   void send_off() {
@@ -98,6 +98,8 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool send_swing_cmd_{false};
   Model model_;
   sensor::Sensor *ir_sensor_{nullptr};
+  
+  bool mute_ir_receiver_{false};
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
