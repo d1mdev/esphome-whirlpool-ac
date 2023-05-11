@@ -156,7 +156,7 @@ void WhirlpoolClimateAC::transmit_state() {
   //} else {
   //  transmit.perform();
   //}
-  if (!this->mute_ir_transmitter) {
+  if (!mute_ir_transmitter) {
     transmit.perform();
   }
 }
