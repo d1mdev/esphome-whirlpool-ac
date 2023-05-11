@@ -74,8 +74,8 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool mute_ir_transmitter;
   
   void set_mute_ir_transmitter(bool value) {
-    this->mute_ir_transmitter_ = value;
-    ESP_LOGD("TAG", "Set MUTE value: %s", this->mute_ir_transmitter ? "true" : "false");
+    mute_ir_transmitter_ = value;
+    ESP_LOGD("TAG", "Set MUTE value: %s", mute_ir_transmitter ? "true" : "false");
   }
   
   void send_off() {
@@ -100,7 +100,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   Model model_;
   sensor::Sensor *ir_sensor_{nullptr};
   
-  bool mute_ir_transmitter_{false};
+  //bool mute_ir_transmitter_{false};
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
