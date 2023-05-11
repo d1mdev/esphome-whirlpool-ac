@@ -75,7 +75,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   
   void set_mute_ir_receiver(bool rcvr_state) {
     this->mute_ir_receiver_ = rcvr_state;
-    ESP_LOGD(TAG, "Set MUTE value: %s", this->mute_ir_transmitter ? "true" : "false");
+    ESP_LOGD("TAG", "Set MUTE value: %s", this->mute_ir_transmitter ? "true" : "false");
   }
   
   void send_off() {
