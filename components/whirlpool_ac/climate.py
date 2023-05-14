@@ -19,6 +19,7 @@ CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(WhirlpoolClimateAC),
         cv.Optional(CONF_MODEL, default="DG11J1-3A"): cv.enum(MODELS, upper=True),
+        cv.Optional(CONF_SENSOR_ID): cv.use_id(sensor.Sensor),
     }
 )
 
@@ -27,3 +28,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await climate_ir.register_climate_ir(var, config)
     cg.add(var.set_model(config[CONF_MODEL]))
+    if CONF_SENSOR_ID in config:
+        sens = await cg.get_variable(config[CONF_SENSOR])
+        cg.add(var.set_sensor(sens))
