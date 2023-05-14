@@ -29,5 +29,5 @@ async def to_code(config):
     await climate_ir.register_climate_ir(var, config)
     cg.add(var.set_model(config[CONF_MODEL]))
     if CONF_SENSOR_ID in config:
-        sens = await cg.get_variable(config[CONF_SENSOR])
+        sens = await cg.get_variable(config[CONF_SENSOR_ID])
         cg.add(var.set_sensor(sens))
