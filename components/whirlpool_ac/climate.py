@@ -1,7 +1,7 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
 from esphome.components import climate_ir
-from esphome.const import CONF_ID, CONF_MODEL, CONF_SENSOR_ID
+from esphome.const import CONF_ID, CONF_MODEL
 
 AUTO_LOAD = ["climate_ir"]
 CODEOWNERS = ["@glmnet"]
@@ -15,11 +15,13 @@ MODELS = {
     "DG11J1-91": Model.MODEL_DG11J1_91,
 }
 
+CONF_IR_TRANSMITTER_MUTE = "ir_transmitter_mute"
+
 CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(WhirlpoolClimateAC),
         cv.Optional(CONF_MODEL, default="DG11J1-3A"): cv.enum(MODELS, upper=True),
-        cv.Optional(CONF_SENSOR_ID): cv.use_id(sensor_id.Sensor),
+        cv.Optional(CONF_IR_TRANSMITTER_MUTE): cv.use_id(sensor.Sensor),
     }
 )
 
@@ -28,6 +30,6 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await climate_ir.register_climate_ir(var, config)
     cg.add(var.set_model(config[CONF_MODEL]))
-    if CONF_SENSOR_ID in config:
-        sens = await cg.get_variable(config[CONF_SENSOR_ID])
-        cg.add(var.set_sensor(sens))
+    if CONF_IR_TRANSMITTER_MUTE in config:
+        sens = await cg.get_variable(config[CONF_IR_TRANSMITTER_MUTE])
+        cg.add(var.set_ir_transmitter_mute(sens))
