@@ -25,7 +25,6 @@ CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
             unit_of_measurement="",
             accuracy_decimals=0,
             device_class="",
-            state_class=STATE_CLASS_MEASUREMENT,
         ),
     }
 )
