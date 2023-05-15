@@ -21,7 +21,12 @@ CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
     {
         cv.GenerateID(): cv.declare_id(WhirlpoolClimateAC),
         cv.Optional(CONF_MODEL, default="DG11J1-3A"): cv.enum(MODELS, upper=True),
-        cv.Optional(CONF_IR_TRANSMITTER_MUTE): cv.use_id(sensor.Sensor),
+        cv.Optional(CONF_IR_TRANSMITTER_MUTE): sensor.sensor_schema(
+            unit_of_measurement="",
+            accuracy_decimals=0,
+            device_class="",
+            state_class=STATE_CLASS_MEASUREMENT,
+        ),
     }
 )
 
