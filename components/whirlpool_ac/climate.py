@@ -1,9 +1,9 @@
 import esphome.codegen as cg
 import esphome.config_validation as cv
-from esphome.components import climate_ir
+from esphome.components import climate_ir, sensor
 from esphome.const import CONF_ID, CONF_MODEL
 
-AUTO_LOAD = ["climate_ir"]
+AUTO_LOAD = ["climate_ir", "sensor"]
 CODEOWNERS = ["@glmnet"]
 
 whirlpool_ac_ns = cg.esphome_ns.namespace("whirlpool_ac")
