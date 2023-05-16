@@ -42,7 +42,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   // used to track when to send the power toggle command
   bool powered_on_assumed;
   
-  void set_ir_sensor(sensor::Sensor *sensor_id) { this->sensor_id_ = sensor_id; }
+  void set_ir_transmitter_mute(binary_sensor.HomeassistantBinarySensor *ir_transmitter_mute) { this->sensor_id_ = sensor_id; }
 
  protected:
   /// Transmit via IR the state of this climate controller.
