@@ -145,7 +145,11 @@ void WhirlpoolClimateAC::transmit_state() {
   // Footer
   data->mark(WHIRLPOOL_BIT_MARK);
 
-  transmit.perform();
+  if (this->ir_transmitter_mute_ != nullptr) {
+    ESP_LOGD(TAG, "Detected external MUTE sensor");
+  }
+  ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_mute_ ? "true" : "false");
+  //transmit.perform();
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
