@@ -30,6 +30,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     climate_ir::ClimateIR::setup();
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+    
     if (this->ir_transmitter_mute_) {
       this->ir_transmitter_mute_->add_on_state_callback([this](bool state) {
       this->ir_transmitter_muted = state;
