@@ -42,7 +42,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   // used to track when to send the power toggle command
   bool powered_on_assumed;
   
-  void set_ir_transmitter_mute(binary_sensor.HomeassistantBinarySensor *ir_transmitter_mute) { this->sensor_id_ = sensor_id; }
+  void set_ir_transmitter_mute(binary_sensor::HomeassistantBinarySensor *ir_transmitter_mute) { this->ir_transmitter_mute_ = ir_transmitter_mute; }
 
  protected:
   /// Transmit via IR the state of this climate controller.
@@ -53,7 +53,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool send_swing_cmd_{false};
   Model model_;
   
-  sensor::Sensor *sensor_id_{nullptr};
+  binary_sensor::HomeassistantBinarySensor *ir_transmitter_mute_{nullptr};
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
