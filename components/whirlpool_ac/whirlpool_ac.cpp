@@ -122,7 +122,7 @@ void WhirlpoolClimateAC::transmit_state() {
   auto transmit = this->transmitter_->transmit();
   auto *data = transmit.get_data();
 
-  data->set_carrier_frequency(38000);
+  data->set_carrier_frequency(WHIRLPOOL_CARRIER_FREQUENCY);
 
   // Header
   data->mark(WHIRLPOOL_HEADER_MARK);
