@@ -30,6 +30,11 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     climate_ir::ClimateIR::setup();
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+    if (this->ir_transmitter_mute_) {
+      this->ir_transmitter_mute_->add_on_state_callback([this](bool state) {
+      this->ir_transmitter_muted = state;
+      });
+    }
   }
 
   /// Override control to change settings of the climate device.
@@ -42,6 +47,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
   // used to track when to send the power toggle command
   bool powered_on_assumed;
+  bool ir_transmitter_muted;
   
   void set_ir_transmitter_mute(binary_sensor::BinarySensor *ir_transmitter_mute) { this->ir_transmitter_mute_ = ir_transmitter_mute; }
 
