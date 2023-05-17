@@ -169,7 +169,12 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   this->last_ir_received_ = millis();
   ESP_LOGD(TAG, "IR SENT millis - %d", this->last_ir_received_);
   int diff_time = ::abs(this->last_ir_sent_ - this->last_ir_received_);
-  ESP_LOGD(TAG, "DIFF - %d, diff_time);
+  ESP_LOGD(TAG, "DIFF - %d", diff_time);
+  // Try to add comparition between sent data and received data packets
+  if (diff_time < 1000) {
+    ESP_LOGD(TAG, "DIFF less than 1 second - %d", diff_time);
+    return false;
+  }
 
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   // Read all bytes.
