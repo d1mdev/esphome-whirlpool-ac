@@ -149,8 +149,13 @@ void WhirlpoolClimateAC::transmit_state() {
     ESP_LOGD(TAG, "Detected external MUTE sensor");
   }
   ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_muted ? "true" : "false");
+  
   this->last_ir_sent_ = millis();
-  //transmit.perform();
+  ESP_LOGD(TAG, "IR SENT millis - %d", this->last_ir_sent_);
+  
+  if (!this->ir_transmitter_muted) {
+    transmit.perform();
+  }
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
@@ -162,6 +167,9 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   }
   
   this->last_ir_received_ = millis();
+  ESP_LOGD(TAG, "IR SENT millis - %d", this->last_ir_received_);
+  int diff_time = ::abs(this->last_ir_sent_ - this->last_ir_received_);
+  ESP_LOGD(TAG, "DIFF - %d, diff_time);
 
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   // Read all bytes.
