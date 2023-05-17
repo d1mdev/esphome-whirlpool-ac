@@ -6,13 +6,14 @@ external_components:
   source: github://d1mdev/esphome-whirlpool-ac
   components: [whirlpool_ac]
 
+# YAML
 climate:
   - platform: whirlpool_ac
     id: climate_id
     name: "climate name"
-    receiver_id: rcvr_id
-    sensor: temperature_sensor_id
-    ir_transmitter_mute: binary_sensor_id
+    receiver_id: <rcvr_id>
+    sensor: <temperature_sensor_id>
+    ir_transmitter_mute: <binary_sensor_id>
     supports_cool: True
     supports_heat: True
     model: DG11J1-91
