@@ -6,7 +6,6 @@ external_components:
   source: github://d1mdev/esphome-whirlpool-ac
   components: [whirlpool_ac]
 
-# YAML
 climate:
   - platform: whirlpool_ac
     id: climate_id
