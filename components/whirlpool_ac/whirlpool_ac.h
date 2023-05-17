@@ -38,6 +38,8 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
       this->ir_transmitter_mute_->add_on_state_callback([this](bool state) {
       this->ir_transmitter_muted = state;
       });
+    } else {
+      this->ir_transmitter_muted = false;
     }
   }
 
