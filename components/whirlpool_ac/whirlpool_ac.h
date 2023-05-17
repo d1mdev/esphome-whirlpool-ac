@@ -31,6 +31,9 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
     
+    this->last_ir_sent_ = millis();
+    this->last_ir_received_ = millis();
+    
     if (this->ir_transmitter_mute_) {
       this->ir_transmitter_mute_->add_on_state_callback([this](bool state) {
       this->ir_transmitter_muted = state;
@@ -62,6 +65,9 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   Model model_;
   
   binary_sensor::BinarySensor *ir_transmitter_mute_{nullptr};
+  
+  uint32_t last_ir_sent_;
+  uint32_t last_ir_received_;
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
