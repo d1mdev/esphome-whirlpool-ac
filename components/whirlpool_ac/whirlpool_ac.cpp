@@ -33,6 +33,7 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
 void WhirlpoolClimateAC::transmit_state() {
+  this->last_transmit_time_ = millis();  // setting the time of the last transmission.
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   remote_state[0] = 0x83;
   remote_state[1] = 0x06;
@@ -150,15 +151,17 @@ void WhirlpoolClimateAC::transmit_state() {
   }
   ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_muted ? "true" : "false");
   
-  this->last_ir_sent_ = millis();
-  ESP_LOGD(TAG, "IR SENT millis - %d", this->last_ir_sent_);
-  
   if (!this->ir_transmitter_muted) {
     transmit.perform();
   }
 }
 
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
+  // Check if the esp isn't currently transmitting
+  if (millis() - this->last_transmit_time_ < 500) {
+    ESP_LOGV(TAG, "Blocked receive because of current transmittion");
+    return false;
+  }
   
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
@@ -166,16 +169,6 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
     return false;
   }
   
-  this->last_ir_received_ = millis();
-  ESP_LOGD(TAG, "IR SENT millis - %d", this->last_ir_received_);
-  int diff_time = this->last_ir_received_ - this->last_ir_sent_;
-  ESP_LOGD(TAG, "DIFF - %d", ::abs(diff_time));
-  // Try to add comparition between sent data and received data packets
-  if (::abs(diff_time) < 1000) {
-    ESP_LOGD(TAG, "DIFF less than 1 second - %d", ::abs(diff_time));
-    return false;
-  }
-
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   // Read all bytes.
   for (int i = 0; i < WHIRLPOOL_STATE_LENGTH; i++) {

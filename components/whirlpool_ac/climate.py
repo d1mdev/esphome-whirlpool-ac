@@ -5,7 +5,7 @@ from esphome.const import CONF_ID, CONF_MODEL
 from esphome.components import binary_sensor
 
 AUTO_LOAD = ["climate_ir", "binary_sensor"]
-CODEOWNERS = ["@glmnet"]
+CODEOWNERS = ["@d1mdev"]
 
 whirlpool_ac_ns = cg.esphome_ns.namespace("whirlpool_ac")
 WhirlpoolClimateAC = whirlpool_ac_ns.class_("WhirlpoolClimateAC", climate_ir.ClimateIR)
