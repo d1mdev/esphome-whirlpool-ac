@@ -52,7 +52,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool powered_on_assumed;
   bool ir_transmitter_muted;
   
-  void set_ir_transmitter_mute(binary_sensor::BinarySensor *ir_transmitter_mute) { this->ir_transmitter_mute_ = ir_transmitter_mute; }
+  void set_ir_transmitter_mute(binary_sensor::BinarySensor *binary_sensor) { this->binary_sensor_ = binary_sensor; }
 
  protected:
   /// Transmit via IR the state of this climate controller.
@@ -65,7 +65,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool send_swing_cmd_{false};
   Model model_;
   
-  binary_sensor::BinarySensor *ir_transmitter_mute_{nullptr};
+  binary_sensor::BinarySensor *binary_sensor_{nullptr};
   
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
