@@ -31,13 +31,13 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
     
-/*    if (this->ir_transmitter_mute_) {
+    if (this->ir_transmitter_mute_) {
       this->ir_transmitter_mute_->add_on_state_callback([this](bool state) {
       this->ir_transmitter_muted = state;
       });
     } else {
       this->ir_transmitter_muted = false;
-    } */
+    }
   }
 
   /// Override control to change settings of the climate device.
@@ -53,7 +53,10 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   bool ir_transmitter_muted;
   
   void set_ir_transmitter_mute(binary_sensor::BinarySensor *ir_transmitter_mute) { this->ir_transmitter_mute_ = ir_transmitter_mute; }
+<<<<<<< HEAD
   void get_ir_transmitter_mute() { return this->ir_transmitter_mute_; }
+=======
+>>>>>>> parent of 291920e (Update whirlpool_ac.h)
 
  protected:
   /// Transmit via IR the state of this climate controller.
@@ -68,6 +71,9 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   
   binary_sensor::BinarySensor *ir_transmitter_mute_{nullptr};
   
+  uint32_t last_ir_sent_;
+  uint32_t last_ir_received_;
+
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
   }
