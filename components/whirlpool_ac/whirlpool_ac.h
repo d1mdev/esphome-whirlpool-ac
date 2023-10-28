@@ -66,9 +66,6 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
   Model model_;
   
   binary_sensor::BinarySensor *ir_transmitter_mute_{nullptr};
-  
-  uint32_t last_ir_sent_;
-  uint32_t last_ir_received_;
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;

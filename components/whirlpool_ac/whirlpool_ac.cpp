@@ -159,7 +159,7 @@ void WhirlpoolClimateAC::transmit_state() {
 bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   // Check if the esp isn't currently transmitting
   if (millis() - this->last_transmit_time_ < 500) {
-    ESP_LOGV(TAG, "Blocked receive because of current transmittion");
+    ESP_LOGV(TAG, "Blocked receive because of current transmission");
     return false;
   }
   
