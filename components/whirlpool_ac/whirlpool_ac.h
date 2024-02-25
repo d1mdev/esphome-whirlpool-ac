@@ -50,7 +50,7 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
   // used to track when to send the power toggle command
   bool powered_on_assumed;
-  bool ir_transmitter_muted;
+  bool ir_transmitter_muted = false;
   
   void set_ir_transmitter_mute(binary_sensor::BinarySensor *ir_transmitter_mute) { this->ir_transmitter_mute_ = ir_transmitter_mute; }
 
