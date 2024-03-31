@@ -314,6 +314,14 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
     }
   }
 
+  // Set received iFeel status
+  if (remote_state[15] == 0x0D) {
+    ESP_LOGVV(TAG, "iFeel toggle pressed ");
+    this->preset = climate::CLIMATE_PRESET_ACTIVITY;
+  } else {
+    this->preset = climate::CLIMATE_PRESET_NONE;  
+  }
+
   this->publish_state();
   return true;
 }
