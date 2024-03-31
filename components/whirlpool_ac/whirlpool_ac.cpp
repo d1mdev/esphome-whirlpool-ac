@@ -115,6 +115,8 @@ void WhirlpoolClimateAC::transmit_state() {
       // this->current_temperature != this->target_temperature - разница в температурах больше 2 град
       if (this->mode == climate::CLIMATE_MODE_HEAT_COOL || this->mode == climate::CLIMATE_MODE_COOL || this->mode == climate::CLIMATE_MODE_HEAT) {
         ESP_LOGD(TAG, "Preset: ACTIVITY");
+        remote_state[15] = 0x0D;
+        remote_state[12] = roundf(this->current_temperature);
       }
       break;
     default:
@@ -127,7 +129,7 @@ void WhirlpoolClimateAC::transmit_state() {
   for (uint8_t i = 14; i < 20; i++)
     remote_state[20] ^= remote_state[i];
 
-  ESP_LOGV(TAG,
+  ESP_LOGD(TAG,
            "Sending: %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X "
            "%02X %02X   %02X",
            remote_state[0], remote_state[1], remote_state[2], remote_state[3], remote_state[4], remote_state[5],
