@@ -120,6 +120,7 @@ void WhirlpoolClimateAC::transmit_state() {
       } else {
         ESP_LOGD(TAG, "Preset failed ");
         this->preset = climate::CLIMATE_PRESET_NONE;
+      }
       break;
     default:
       break;
