@@ -113,11 +113,13 @@ void WhirlpoolClimateAC::transmit_state() {
     case climate::CLIMATE_PRESET_ACTIVITY:
       // Только в режимах COOL, HEAT и HEAT_COOL
       // this->current_temperature != this->target_temperature - разница в температурах больше 2 град
-      if (this->mode == climate::CLIMATE_MODE_HEAT_COOL || this->mode == climate::CLIMATE_MODE_COOL || this->mode == climate::CLIMATE_MODE_HEAT) {
+      if ((this->mode == climate::CLIMATE_MODE_HEAT_COOL || this->mode == climate::CLIMATE_MODE_COOL || this->mode == climate::CLIMATE_MODE_HEAT) && !std::isnan(this->current_temperature)) {
         ESP_LOGD(TAG, "Preset: ACTIVITY");
         remote_state[15] = 0x0D;
         remote_state[12] = roundf(this->current_temperature);
-      }
+      } else {
+        ESP_LOGD(TAG, "Preset failed ";
+        this->preset = climate::CLIMATE_PRESET_NONE;
       break;
     default:
       break;
