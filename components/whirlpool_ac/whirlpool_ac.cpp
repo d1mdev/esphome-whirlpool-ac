@@ -106,7 +106,7 @@ void WhirlpoolClimateAC::transmit_state() {
   }
   
   // Preset for iFeel
-  switch (this->preset) {
+  switch (this->preset.value()) {
     case climate::CLIMATE_PRESET_NONE:
       ESP_LOGD(TAG, "Preset: %s", this->preset);
       break;
