@@ -118,7 +118,7 @@ void WhirlpoolClimateAC::transmit_state() {
         remote_state[15] = 0x0D;
         remote_state[12] = roundf(this->current_temperature);
       } else {
-        ESP_LOGD(TAG, "Preset failed ";
+        ESP_LOGD(TAG, "Preset failed ");
         this->preset = climate::CLIMATE_PRESET_NONE;
       break;
     default:
