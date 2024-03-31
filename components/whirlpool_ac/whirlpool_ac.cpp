@@ -104,6 +104,18 @@ void WhirlpoolClimateAC::transmit_state() {
       remote_state[8] |= 64;
     }
   }
+  
+  // Preset for iFeel
+  switch (this->preset) {
+    case climate::CLIMATE_PRESET_NONE:
+      ESP_LOGD(TAG, "Preset: %s", this->preset);
+      break;
+    case climate::CLIMATE_PRESET_ACTIVITY:
+      ESP_LOGD(TAG, "Preset: %s", this->preset);
+      break;
+    default:
+      break;
+  }
 
   // Checksum
   for (uint8_t i = 2; i < 13; i++)
