@@ -150,6 +150,7 @@ void WhirlpoolClimateAC::transmit_state() {
     ESP_LOGD(TAG, "Detected external MUTE sensor");
   }
   ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_muted ? "true" : "false");
+  ESP_LOGD(TAG, "Current temp: %f", this->current_temperature);
   
   if (!this->ir_transmitter_muted) {
     transmit.perform();
