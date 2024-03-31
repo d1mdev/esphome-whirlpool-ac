@@ -108,17 +108,17 @@ void WhirlpoolClimateAC::transmit_state() {
   // Preset for iFeel
   switch (this->preset.value()) {
     case climate::CLIMATE_PRESET_NONE:
-      ESP_LOGD(TAG, "Preset: NONE");
+      ESP_LOGD(TAG, "Asking for preset: NONE");
       break;
     case climate::CLIMATE_PRESET_ACTIVITY:
       // Только в режимах COOL, HEAT и HEAT_COOL
       // this->current_temperature != this->target_temperature - разница в температурах больше 2 град
       if ((this->mode == climate::CLIMATE_MODE_HEAT_COOL || this->mode == climate::CLIMATE_MODE_COOL || this->mode == climate::CLIMATE_MODE_HEAT) && !std::isnan(this->current_temperature)) {
-        ESP_LOGD(TAG, "Preset: ACTIVITY");
+        ESP_LOGD(TAG, "Asking for preset: ACTIVITY ");
         remote_state[15] = 0x0D;
         remote_state[12] = roundf(this->current_temperature);
       } else {
-        ESP_LOGD(TAG, "Preset failed ");
+        ESP_LOGD(TAG, "Preset disabled ");
         this->preset = climate::CLIMATE_PRESET_NONE;
       }
       break;
