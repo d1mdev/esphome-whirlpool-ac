@@ -111,7 +111,11 @@ void WhirlpoolClimateAC::transmit_state() {
       ESP_LOGD(TAG, "Preset: NONE");
       break;
     case climate::CLIMATE_PRESET_ACTIVITY:
-      ESP_LOGD(TAG, "Preset: ACTIVITY");
+      // Только в режимах COOL, HEAT и HEAT_COOL
+      // this->current_temperature != this->target_temperature - разница в температурах больше 2 град
+      if (this->mode == climate::CLIMATE_MODE_HEAT_COOL || this->mode = climate::CLIMATE_MODE_COOL || this->mode == climate::CLIMATE_MODE_HEAT) {
+        ESP_LOGD(TAG, "Preset: ACTIVITY");
+      }
       break;
     default:
       break;
