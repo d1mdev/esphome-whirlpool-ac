@@ -322,10 +322,10 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
     if (remote_state[12] != 0x00) {
       int c_temp = remote_state[12];
       ESP_LOGD(TAG, "Turning iFeel ON. Temp from remote: %d. ", c_temp);
-      set_ifeel_switch(true);
+      update_ifeel(true);
     } else {
       ESP_LOGD(TAG, "Turning iFeel OFF. ");
-      set_ifeel_switch(false);
+      update_ifeel(false);
     }
   }
   this->publish_state();
