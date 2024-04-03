@@ -32,7 +32,7 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
-void WhirlpoolClimateAC::transmit_state() {
+void WhirlpoolAC::transmit_state() {
   this->last_transmit_time_ = millis();  // setting the time of the last transmission.
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   remote_state[0] = 0x83;
@@ -177,7 +177,7 @@ void WhirlpoolClimateAC::transmit_state() {
   }
 }
 
-bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
+bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
   // Check if the esp isn't currently transmitting
   if (millis() - this->last_transmit_time_ < 500) {
     ESP_LOGV(TAG, "Blocked receive because of current transmission");
@@ -328,21 +328,21 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
   return true;
 }
 
-void WhirlpoolClimateAC::update_ir_transmitter(bool ir_transmitter) {
+void WhirlpoolAC::update_ir_transmitter(bool ir_transmitter) {
   if (this->ir_transmitter_switch_ != nullptr) {
     this->ir_transmitter_state_ = ir_transmitter;
     this->ir_transmitter_switch_->publish_state(this->ir_transmitter_state_);
   }
 }
 
-void WhirlpoolClimateAC::update_ifeel(bool ifeel) {
+void WhirlpoolAC::update_ifeel(bool ifeel) {
   if (this->ifeel_switch_ != nullptr) {
     this->ifeel_state_ = ifeel;
     this->ifeel_switch_->publish_state(this->ifeel_state_);
   }
 }
 
-void WhirlpoolClimateAC::set_ir_transmitter_switch(switch_::Switch *ir_transmitter_switch) {
+void WhirlpoolAC::set_ir_transmitter_switch(switch_::Switch *ir_transmitter_switch) {
   this->ir_transmitter_switch_ = ir_transmitter_switch;
   this->ir_transmitter_switch_->add_on_state_callback([this](bool state) {
     if (state == this->ir_transmitter_state_)
@@ -351,7 +351,7 @@ void WhirlpoolClimateAC::set_ir_transmitter_switch(switch_::Switch *ir_transmitt
   });
 }
 
-void WhirlpoolClimateAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
+void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
   this->ifeel_switch_ = ifeel_switch;
   this->ifeel_switch_->add_on_state_callback([this](bool state) {
     if (state == this->ifeel_state_)
@@ -360,7 +360,7 @@ void WhirlpoolClimateAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
   });
 }
 
-void WhirlpoolClimateAC::on_ir_transmitter_change(bool state) {
+void WhirlpoolAC::on_ir_transmitter_change(bool state) {
   this->ir_transmitter_state_ = state;
   if (state) {
     ESP_LOGV(TAG, "Turning on IR transmitter. ");
@@ -369,7 +369,7 @@ void WhirlpoolClimateAC::on_ir_transmitter_change(bool state) {
   }
 }
 
-void WhirlpoolClimateAC::on_ifeel_change(bool state) {
+void WhirlpoolAC::on_ifeel_change(bool state) {
   this->ifeel_state_ = state;
   if (state) {
     ESP_LOGV(TAG, "Turning on iFeel. ");
