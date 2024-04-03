@@ -8,9 +8,9 @@ AUTO_LOAD = ["climate_ir", "switch"]
 CODEOWNERS = ["@d1mdev"]
 
 whirlpool_ac_ns = cg.esphome_ns.namespace("whirlpool_ac")
-WhirlpoolClimateAC = whirlpool_ac_ns.class_("WhirlpoolClimateAC", climate_ir.ClimateIR)
-WhirlpoolClimateACSwitch = whirlpool_ac_ns.class_(
-    "WhirlpoolClimateAC", switch.Switch, cg.Component
+WhirlpoolAC = whirlpool_ac_ns.class_("WhirlpoolAC", climate_ir.ClimateIR)
+WhirlpoolACSwitch = whirlpool_ac_ns.class_(
+    "WhirlpoolACSwitch", switch.Switch, cg.Component
 )
 
 Model = whirlpool_ac_ns.enum("Model")
@@ -23,12 +23,12 @@ CONF_IR_TRANSMITTER_SWITCH = "ir_transmitter_switch"
 CONF_IFEEL_SWITCH = "ifeel_switch"
 
 SWITCH_SCHEMA = switch.SWITCH_SCHEMA.extend(cv.COMPONENT_SCHEMA).extend(
-    {cv.GenerateID(): cv.declare_id(WhirlpoolClimateACSwitch)}
+    {cv.GenerateID(): cv.declare_id(WhirlpoolACSwitch)}
 )
 
 CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
     {
-        cv.GenerateID(): cv.declare_id(WhirlpoolClimateAC),
+        cv.GenerateID(): cv.declare_id(WhirlpoolAC),
         cv.Optional(CONF_MODEL, default="DG11J1-3A"): cv.enum(MODELS, upper=True),
         cv.Optional(CONF_IR_TRANSMITTER_SWITCH): SWITCH_SCHEMA,
         cv.Optional(CONF_IFEEL_SWITCH): SWITCH_SCHEMA,
