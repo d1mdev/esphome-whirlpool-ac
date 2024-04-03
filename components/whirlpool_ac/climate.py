@@ -10,7 +10,7 @@ CODEOWNERS = ["@d1mdev"]
 whirlpool_ac_ns = cg.esphome_ns.namespace("whirlpool_ac")
 WhirlpoolClimateAC = whirlpool_ac_ns.class_("WhirlpoolClimateAC", climate_ir.ClimateIR)
 WhirlpoolClimateACSwitch = whirlpool_ac_ns.class_(
-    "WhirlpoolClimateACSwitch", switch.Switch, cg.Component
+    "WhirlpoolClimateAC", switch.Switch, cg.Component
 )
 
 Model = whirlpool_ac_ns.enum("Model")
