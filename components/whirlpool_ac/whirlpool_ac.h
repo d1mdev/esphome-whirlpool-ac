@@ -31,14 +31,6 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
     climate_ir::ClimateIR::setup();
 
     this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
-    
-    if (this->ir_transmitter_mute_) {
-      this->ir_transmitter_mute_->add_on_state_callback([this](bool state) {
-      this->ir_transmitter_muted = state;
-      });
-    } else {
-      this->ir_transmitter_muted = false;
-    }
   }
 
   /// Override control to change settings of the climate device.
@@ -51,22 +43,31 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
   // used to track when to send the power toggle command
   bool powered_on_assumed;
-  bool ir_transmitter_muted = false;
-  
-  void set_ir_transmitter_mute(binary_sensor::BinarySensor *ir_transmitter_mute) { this->ir_transmitter_mute_ = ir_transmitter_mute; }
+    
+  void set_ir_transmitter_switch(switch_::Switch *ir_transmitter_switch);
+  void set_ifeel_switch(switch_::Switch *ifeel_switch);
 
  protected:
   /// Transmit via IR the state of this climate controller.
   void transmit_state() override;
   /// Handle received IR Buffer
   bool on_receive(remote_base::RemoteReceiveData data) override;
+  /// Stores the state of switch to prevent duplicate packets
+  bool ir_transmitter_state_ = false;
+  bool ifeel_state_ = false;
   /// Set the time of the last transmission.
   int32_t last_transmit_time_{};
 
   bool send_swing_cmd_{false};
   Model model_;
   
-  binary_sensor::BinarySensor *ir_transmitter_mute_{nullptr};
+  switch_::Switch *ir_transmitter_switch_ = nullptr;  // Switch to toggle IR mute on/off
+  switch_::Switch *ifeel_switch_ = nullptr;  // Switch to toggle iFeel mode on/off
+
+  void update_ir_transmitter(bool ir_transmitter);
+  void update_ifeel(bool ifeel);
+  virtual void on_ir_transmitter_change(bool ir_transmitter) = 0;
+  virtual void on_ifeel_change(bool ifeel) = 0;
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
