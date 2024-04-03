@@ -167,13 +167,12 @@ void WhirlpoolClimateAC::transmit_state() {
   // Footer
   data->mark(WHIRLPOOL_BIT_MARK);
 
-  if (this->ir_transmitter_mute_ != nullptr) {
+  if (this->ir_transmitter_switch_ != nullptr) {
     ESP_LOGD(TAG, "Detected external MUTE sensor");
   }
-  ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_muted ? "true" : "false");
-  ESP_LOGD(TAG, "Current temp: %f", this->current_temperature);
+  ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_state_ ? "true" : "false");
   
-  if (!this->ir_transmitter_muted) {
+  if (this->ir_transmitter_state_) {
     transmit.perform();
   }
 }
@@ -327,6 +326,56 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
 
   this->publish_state();
   return true;
+}
+
+void WhirlpoolClimateAC::update_ir_transmitter(bool ir_transmitter) {
+  if (this->ir_transmitter_switch_ != nullptr) {
+    this->ir_transmitter_state_ = ir_transmitter;
+    this->ir_transmitter_switch_->publish_state(this->ir_transmitter_state_);
+  }
+}
+
+void WhirlpoolClimateAC::update_ifeel(bool ifeel) {
+  if (this->ifeel_switch_ != nullptr) {
+    this->ifeel_state_ = ifeel;
+    this->ifeel_switch_->publish_state(this->ifeel_state_);
+  }
+}
+
+void WhirlpoolClimateAC::set_ir_transmitter_switch(switch_::Switch *ir_transmitter_switch) {
+  this->ir_transmitter_switch_ = ir_transmitter_switch;
+  this->ir_transmitter_switch_->add_on_state_callback([this](bool state) {
+    if (state == this->ir_transmitter_state_)
+      return;
+    this->on_ir_transmitter_change(state);
+  });
+}
+
+void WhirlpoolClimateAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
+  this->ifeel_switch_ = ifeel_switch;
+  this->ifeel_switch_->add_on_state_callback([this](bool state) {
+    if (state == this->ifeel_state_)
+      return;
+    this->on_ifeel_change(state);
+  });
+}
+
+void WhirlpoolClimateAC::on_ir_transmitter_change(bool state) {
+  this->ir_transmitter_state_ = state;
+  if (state) {
+    ESP_LOGV(TAG, "Turning on IR transmitter. ");
+  } else {
+    ESP_LOGV(TAG, "Turning off IR transmitter. ");
+  }
+}
+
+void WhirlpoolClimateAC::on_ifeel_change(bool state) {
+  this->ifeel_state_ = state;
+  if (state) {
+    ESP_LOGV(TAG, "Turning on iFeel. ");
+  } else {
+    ESP_LOGV(TAG, "Turning off iFeel. ");
+  }
 }
 
 }  // namespace whirlpool_ac
