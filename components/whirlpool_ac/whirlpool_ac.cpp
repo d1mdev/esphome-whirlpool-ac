@@ -168,9 +168,9 @@ void WhirlpoolAC::transmit_state() {
   data->mark(WHIRLPOOL_BIT_MARK);
 
   if (this->ir_transmitter_switch_ != nullptr) {
-    ESP_LOGD(TAG, "Detected external MUTE sensor");
+    ESP_LOGD(TAG, "Detected external MUTE switch. ");
   }
-  ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_state_ ? "true" : "false");
+  ESP_LOGD(TAG, "TRANSMITTER IS %s. ", this->ir_transmitter_state_ ? "ON" : "OFF");
   
   if (this->ir_transmitter_state_) {
     transmit.perform();
@@ -318,12 +318,16 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
 
   // Set received iFeel status
   if (remote_state[15] == 0x0D) {
-    ESP_LOGVV(TAG, "iFeel toggle pressed ");
-    this->preset = climate::CLIMATE_PRESET_ACTIVITY;
-  } else {
-    this->preset = climate::CLIMATE_PRESET_NONE;  
+    ESP_LOGVV(TAG, "iFeel toggle pressed. ");
+    if (remote_state[12] != 0x00) {
+      int c_temp = remote_state[12];
+      ESP_LOGD(TAG, "Turning iFeel ON. Temp from remote: %d. ", c_temp);
+      set_ifeel_switch(true);
+    } else {
+      ESP_LOGD(TAG, "Turning iFeel OFF. ");
+      set_ifeel_switch(false);
+    }
   }
-
   this->publish_state();
   return true;
 }

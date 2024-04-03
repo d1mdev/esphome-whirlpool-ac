@@ -53,7 +53,7 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
   /// Handle received IR Buffer
   bool on_receive(remote_base::RemoteReceiveData data) override;
   /// Stores the state of switch to prevent duplicate packets
-  bool ir_transmitter_state_ = true;
+  bool ir_transmitter_state_ = false;
   bool ifeel_state_ = false;
   /// Set the time of the last transmission.
   int32_t last_transmit_time_{};
