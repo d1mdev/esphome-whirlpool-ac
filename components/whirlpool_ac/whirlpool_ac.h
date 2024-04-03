@@ -66,8 +66,8 @@ class WhirlpoolClimateAC : public climate_ir::ClimateIR {
 
   void update_ir_transmitter(bool ir_transmitter);
   void update_ifeel(bool ifeel);
-  virtual void on_ir_transmitter_change(bool ir_transmitter) = 0;
-  virtual void on_ifeel_change(bool ifeel) = 0;
+  void on_ir_transmitter_change(bool ir_transmitter);
+  void on_ifeel_change(bool ifeel);
 
   float temperature_min_() {
     return (model_ == MODEL_DG11J1_3A) ? WHIRLPOOL_DG11J1_3A_TEMP_MIN : WHIRLPOOL_DG11J1_91_TEMP_MIN;
