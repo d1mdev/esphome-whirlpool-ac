@@ -400,6 +400,7 @@ void WhirlpoolAC::update_ir_transmitter(bool ir_transmitter) {
 
 void WhirlpoolAC::update_ifeel(bool ifeel) {
   if (this->ifeel_switch_ != nullptr) {
+    ESP_LOGD(TAG, "update_ifeel. ");
     this->ifeel_state_ = ifeel;
     this->ifeel_switch_->publish_state(this->ifeel_state_);
   }
@@ -419,12 +420,9 @@ void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
   this->ifeel_switch_->add_on_state_callback([this](bool state) {
     if (state == this->ifeel_state_)
       return;
-    if (!this->powered_on_assumed) {
-      ifeel_switch_.turn_off;;
-      return;
-    }
+    ESP_LOGD(TAG, "set_ifeel_switch. ");
     this->on_ifeel_change(state);
-    ESP_LOGD(TAG, "Switch pressed. ");
+    //ESP_LOGD(TAG, "Switch pressed. ");
     this->ifeel_switching_ = true;
     this->ifeel_start_time_ = millis();
     this->transmit_state();
@@ -441,6 +439,7 @@ void WhirlpoolAC::on_ir_transmitter_change(bool state) {
 }
 
 void WhirlpoolAC::on_ifeel_change(bool state) {
+  ESP_LOGD(TAG, "on_ifeel_change. ");
   this->ifeel_state_ = state;
   this->ifeel_switching_ = true;
   if (state) {
