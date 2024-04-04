@@ -420,7 +420,7 @@ void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
     if (state == this->ifeel_state_)
       return;
     if (!this->powered_on_assumed) {
-      ifeel_switch.turn_off;;
+      ifeel_switch_.turn_off;;
       return;
     }
     this->on_ifeel_change(state);
