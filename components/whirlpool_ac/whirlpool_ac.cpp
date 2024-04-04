@@ -106,7 +106,20 @@ void WhirlpoolAC::transmit_state() {
   }
   
   // Preset for iFeel
-  switch (this->preset.value()) {
+  if (this->ifeel_state_) {
+    ESP_LOGD(TAG, "iFeel switch is ON. ");
+    if ((this->mode == climate::CLIMATE_MODE_HEAT_COOL || this->mode == climate::CLIMATE_MODE_COOL || this->mode == climate::CLIMATE_MODE_HEAT) && !std::isnan(this->current_temperature)) {
+      ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+      remote_state[12] = roundf(this->current_temperature);
+      if (this->ifeel_switching_) {
+        remote_state[15] = 0x0D;
+        this->ifeel_switching_ = false;
+      }
+    } else {
+      ESP_LOGD(TAG, "Nothing to do. ");
+    }
+  }
+/*   switch (this->preset.value()) {
     case climate::CLIMATE_PRESET_NONE:
       ESP_LOGD(TAG, "Asking for preset: NONE");
       break;
@@ -124,7 +137,7 @@ void WhirlpoolAC::transmit_state() {
       break;
     default:
       break;
-  }
+  } */
 
   // Checksum
   for (uint8_t i = 2; i < 13; i++)
@@ -375,6 +388,7 @@ void WhirlpoolAC::on_ir_transmitter_change(bool state) {
 
 void WhirlpoolAC::on_ifeel_change(bool state) {
   this->ifeel_state_ = state;
+  this->ifeel_switching_ = true;
   if (state) {
     ESP_LOGV(TAG, "Turning on iFeel. ");
   } else {

@@ -55,6 +55,7 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
   /// Stores the state of switch to prevent duplicate packets
   bool ir_transmitter_state_ = false;
   bool ifeel_state_ = false;
+  bool ifeel_switching_ = false;
   /// Set the time of the last transmission.
   int32_t last_transmit_time_{};
 
