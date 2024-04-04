@@ -33,6 +33,9 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
         this->current_temperature = state;
         // current temperature changed, publish state
         this->publish_state();
+        if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 300000) && (abs(this->current_temperature - this->target_temperature) > 1)) {
+          ESP_LOGD(TAG, "Sending iFeel update. ");
+        }
       });
       this->current_temperature = this->sensor_->state;
     } else
@@ -83,6 +86,8 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
   bool ifeel_switching_ = false;
   /// Set the time of the last transmission.
   int32_t last_transmit_time_{};
+  
+  int32_t ifeel_start_time_{};
 
   bool send_swing_cmd_{false};
   Model model_;
