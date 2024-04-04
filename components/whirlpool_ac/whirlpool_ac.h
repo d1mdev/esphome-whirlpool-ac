@@ -26,7 +26,7 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
                                climate::CLIMATE_FAN_HIGH},
                               {climate::CLIMATE_SWING_OFF, climate::CLIMATE_SWING_VERTICAL}) {}
 
-  void setup() override {
+  void setup() override; /*{
 //    climate_ir::ClimateIR::setup();
     if (this->sensor_) {
       this->sensor_->add_on_state_callback([this](float state) {
@@ -60,7 +60,7 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
 
       this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
   }
-
+*/
   /// Override control to change settings of the climate device.
   void control(const climate::ClimateCall &call) override {
     send_swing_cmd_ = call.get_swing_mode().has_value();

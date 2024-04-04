@@ -32,6 +32,41 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
+void WhirlpoolAC::setup () {
+//    climate_ir::ClimateIR::setup();
+    if (this->sensor_) {
+      this->sensor_->add_on_state_callback([this](float state) {
+        this->current_temperature = state;
+        // current temperature changed, publish state
+        this->publish_state();
+        if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 300000) && (abs(this->current_temperature - this->target_temperature) > 1)) {
+          ESP_LOGD(TAG, "Sending iFeel update. ");
+        }
+      });
+      this->current_temperature = this->sensor_->state;
+    } else
+      this->current_temperature = NAN;
+    // restore set points
+    auto restore = this->restore_state_();
+    if (restore.has_value()) {
+      restore->apply(this);
+    } else {
+      // restore from defaults
+      this->mode = climate::CLIMATE_MODE_OFF;
+      // initialize target temperature to some value so that it's not NAN
+      this->target_temperature =
+        roundf(clamp(this->current_temperature, this->minimum_temperature_, this->maximum_temperature_));
+      this->fan_mode = climate::CLIMATE_FAN_AUTO;
+      this->swing_mode = climate::CLIMATE_SWING_OFF;
+      this->preset = climate::CLIMATE_PRESET_NONE;
+    }
+    // Never send nan to HA
+    if (std::isnan(this->target_temperature))
+      this->target_temperature = 24;
+
+      this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+  }
+
 void WhirlpoolAC::transmit_state() {
   this->last_transmit_time_ = millis();  // setting the time of the last transmission.
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
