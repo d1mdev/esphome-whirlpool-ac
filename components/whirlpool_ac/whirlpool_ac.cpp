@@ -73,6 +73,8 @@ void WhirlpoolAC::transmit_state() {
       remote_state[15] = 6;
       break;
     case climate::CLIMATE_MODE_OFF:
+      this->update_ifeel(false);
+      break;
     default:
       break;
   }
@@ -181,7 +183,7 @@ void WhirlpoolAC::transmit_state() {
   data->mark(WHIRLPOOL_BIT_MARK);
 
   if (this->ir_transmitter_switch_ != nullptr) {
-    ESP_LOGD(TAG, "Detected external MUTE switch. ");
+    ESP_LOGD(TAG, "Detected transmitter MUTE switch. ");
   }
   ESP_LOGD(TAG, "TRANSMITTER IS %s. ", this->ir_transmitter_state_ ? "ON" : "OFF");
   
