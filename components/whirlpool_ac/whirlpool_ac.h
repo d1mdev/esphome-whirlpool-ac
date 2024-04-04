@@ -21,11 +21,10 @@ const float WHIRLPOOL_DG11J1_91_TEMP_MIN = 16.0;
 class WhirlpoolAC : public climate_ir::ClimateIR {
  public:
   WhirlpoolAC()
-      : climate_ir::ClimateIR(temperature_min_(), temperature_max_(), 1.0f, true, true,
+      : climate_ir::ClimateIR(temperature_min_(), temperature_max_(), 1.0f, false, true,
                               {climate::CLIMATE_FAN_AUTO, climate::CLIMATE_FAN_LOW, climate::CLIMATE_FAN_MEDIUM,
                                climate::CLIMATE_FAN_HIGH},
-                              {climate::CLIMATE_SWING_OFF, climate::CLIMATE_SWING_VERTICAL},
-                              {climate::CLIMATE_PRESET_NONE, climate::CLIMATE_PRESET_ACTIVITY}) {} //NONE = 0, ACTIVITY = 7
+                              {climate::CLIMATE_SWING_OFF, climate::CLIMATE_SWING_VERTICAL}) {}
 
   void setup() override {
     climate_ir::ClimateIR::setup();
