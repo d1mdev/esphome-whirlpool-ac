@@ -283,7 +283,7 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
     return false;
   }
 
-  ESP_LOGV(
+  ESP_LOGD(
       TAG,
       "Received: %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X "
       "%02X %02X   %02X",
@@ -416,7 +416,7 @@ void WhirlpoolAC::set_ir_transmitter_switch(switch_::Switch *ir_transmitter_swit
 void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
   this->ifeel_switch_ = ifeel_switch;
   this->ifeel_switch_->add_on_state_callback([this](bool state) {
-    if (state == this->ifeel_state_)
+    if ((state == this->ifeel_state_) || !this->powered_on_assumed)
       return;
     this->on_ifeel_change(state);
     ESP_LOGD(TAG, "Switch pressed. ");
