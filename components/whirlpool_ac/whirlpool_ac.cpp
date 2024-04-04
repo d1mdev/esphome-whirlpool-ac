@@ -41,6 +41,8 @@ void WhirlpoolAC::setup () {
         this->publish_state();
         if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 300000) && (abs(this->current_temperature - this->target_temperature) > 1)) {
           ESP_LOGD(TAG, "Sending iFeel update. ");
+          this->ifeel_start_time_ = millis();
+          this->transmit_state();
         }
       });
       this->current_temperature = this->sensor_->state;
