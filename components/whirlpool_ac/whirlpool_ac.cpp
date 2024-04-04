@@ -377,6 +377,8 @@ void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
       return;
     this->on_ifeel_change(state);
     ESP_LOGD(TAG, "Switch pressed. ");
+    this->ifeel_switching_ = true;
+    this->transmit_state();
   });
 }
 
