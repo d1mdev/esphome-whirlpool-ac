@@ -147,6 +147,7 @@ void WhirlpoolAC::transmit_state() {
   // Preset for iFeel
   if (this->ifeel_state_) {
     ESP_LOGD(TAG, "iFeel switch is ON. ");
+    remote_state[11] = 0x80;
     if (!std::isnan(this->current_temperature)) {
       ESP_LOGD(TAG, "Sending current_temperature to AC. ");
       remote_state[12] = roundf(this->current_temperature);
@@ -416,8 +417,12 @@ void WhirlpoolAC::set_ir_transmitter_switch(switch_::Switch *ir_transmitter_swit
 void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
   this->ifeel_switch_ = ifeel_switch;
   this->ifeel_switch_->add_on_state_callback([this](bool state) {
-    if ((state == this->ifeel_state_) || !this->powered_on_assumed)
+    if (state == this->ifeel_state_)
       return;
+    if (!this->powered_on_assumed) {
+      this->update_ifeel(false);
+      return;
+    }
     this->on_ifeel_change(state);
     ESP_LOGD(TAG, "Switch pressed. ");
     this->ifeel_switching_ = true;
