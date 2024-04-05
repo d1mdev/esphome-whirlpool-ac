@@ -402,7 +402,7 @@ void WhirlpoolAC::update_ifeel(bool ifeel) {
   if (this->ifeel_switch_ != nullptr) {
     ESP_LOGD(TAG, "update_ifeel. ");
     this->ifeel_state_ = ifeel;
-    //this->ifeel_switch_->publish_state(this->ifeel_state_);
+    this->ifeel_switch_->publish_state(this->ifeel_state_);
   }
 }
 
@@ -422,10 +422,6 @@ void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
       return;
     ESP_LOGD(TAG, "set_ifeel_switch. ");
     this->on_ifeel_change(state);
-    //ESP_LOGD(TAG, "Switch pressed. ");
-    this->ifeel_switching_ = true;
-    this->ifeel_start_time_ = millis();
-    this->transmit_state();
   });
 }
 
@@ -441,12 +437,21 @@ void WhirlpoolAC::on_ir_transmitter_change(bool state) {
 void WhirlpoolAC::on_ifeel_change(bool state) {
   ESP_LOGD(TAG, "on_ifeel_change. ");
   this->ifeel_state_ = state;
+  if (this->powered_on_assumed) {
+    this->ifeel_switching_ = true;
+    this->ifeel_start_time_ = millis();
+    this->transmit_state();
+  } else {
+    ESP_LOGD(TAG, "No switch activity while AC is OFF. ");
+    ifeel_switch_->toggle();
+  }
+/*   this->ifeel_state_ = state;
   this->ifeel_switching_ = true;
   if (state) {
     ESP_LOGV(TAG, "Turning on iFeel. ");
   } else {
     ESP_LOGV(TAG, "Turning off iFeel. ");
-  }
+  } */
 }
 
 }  // namespace whirlpool_ac
