@@ -39,6 +39,7 @@ void WhirlpoolAC::setup () {
         this->current_temperature = state;
         // current temperature changed, publish state
         this->publish_state();
+        ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, delta - %d", (this->ifeel_start_time_ / 60000), (millis() - this->ifeel_start_time_) / 60000);
         if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 300000) && (abs(this->current_temperature - this->target_temperature) > 1) && this->powered_on_assumed) {
           ESP_LOGD(TAG, "Sending iFeel update. ");
           this->ifeel_start_time_ = millis();
@@ -373,13 +374,14 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
 
   // Set received iFeel status
   if (remote_state[15] == 0x0D) {
-    ESP_LOGVV(TAG, "iFeel toggle pressed. ");
+    ESP_LOGD(TAG, "iFeel toggle pressed on remote. ");
     if (remote_state[12] != 0x00) {
       int c_temp = remote_state[12];
       ESP_LOGD(TAG, "Turning iFeel ON. Temp from remote: %d. ", c_temp);
       if (!std::isnan(this->current_temperature)) {
         this->current_temperature = c_temp;
-        ESP_LOGD(TAG, "Getting current_temperature from remote. ");
+        this->current_temperature->publish_state();
+        ESP_LOGD(TAG, "Setting current_temperature from remote. ");
       }
       update_ifeel(true);
     } else {
@@ -420,10 +422,6 @@ void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
   this->ifeel_switch_->add_on_state_callback([this](bool state) {
     if (state == this->ifeel_state_)
       return;
-    if (!this->powered_on_assumed) {
-    //  ifeel_switch_->toggle();
-      return;
-    }
     ESP_LOGD(TAG, "set_ifeel_switch. ");
     this->on_ifeel_change(state);
   });
@@ -447,7 +445,6 @@ void WhirlpoolAC::on_ifeel_change(bool state) {
     this->transmit_state();
   } else {
     ESP_LOGD(TAG, "No switch activity while AC is OFF. ");
-    ifeel_switch_->toggle();
   }
 /*   this->ifeel_state_ = state;
   this->ifeel_switching_ = true;
