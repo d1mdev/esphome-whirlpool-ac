@@ -402,7 +402,7 @@ void WhirlpoolAC::update_ifeel(bool ifeel) {
   if (this->ifeel_switch_ != nullptr) {
     ESP_LOGD(TAG, "update_ifeel. ");
     this->ifeel_state_ = ifeel;
-    this->ifeel_switch_->publish_state(this->ifeel_state_);
+    //this->ifeel_switch_->publish_state(this->ifeel_state_);
   }
 }
 
