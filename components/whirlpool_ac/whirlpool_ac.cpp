@@ -380,7 +380,6 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
       ESP_LOGD(TAG, "Turning iFeel ON. Temp from remote: %d. ", c_temp);
       if (!std::isnan(this->current_temperature)) {
         this->current_temperature = c_temp;
-        this->current_temperature->publish_state();
         ESP_LOGD(TAG, "Setting current_temperature from remote. ");
       }
       update_ifeel(true);
