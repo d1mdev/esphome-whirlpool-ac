@@ -421,7 +421,7 @@ void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
     if (state == this->ifeel_state_)
       return;
     if (!this->powered_on_assumed) {
-      ifeel_switch_->toggle();
+    //  ifeel_switch_->toggle();
       return;
     }
     ESP_LOGD(TAG, "set_ifeel_switch. ");
