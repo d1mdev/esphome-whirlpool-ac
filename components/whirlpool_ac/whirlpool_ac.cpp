@@ -456,7 +456,9 @@ void WhirlpoolAC::on_ifeel_change(bool state) {
 }
 
 void WhirlpoolAC::on_current_temperature_update(float state) {
-  ESP_LOGD(TAG, "Get updates from sensor. ");
+  ESP_LOGD(TAG, "--------------------------------------------");
+  ESP_LOGD(TAG, "Get updates from sensor. State is: %.1f", state);
+  ESP_LOGD(TAG, "--------------------------------------------");
 }
 
 }  // namespace whirlpool_ac
