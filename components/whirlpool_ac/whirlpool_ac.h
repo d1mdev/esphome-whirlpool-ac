@@ -12,6 +12,15 @@ enum Model {
   MODEL_DG11J1_91 = 1,  /// Temperature range is from 16 to 30
 };
 
+/// Simple enum to represent internal states of iFeel mode.
+enum Mode {
+  OFF = 0,
+  OFF_ON = 1,
+  SWITCHING = 2,
+  ON_OFF = 3,
+  ON = 4,
+};
+
 // Temperature
 const float WHIRLPOOL_DG11J1_3A_TEMP_MAX = 32.0;
 const float WHIRLPOOL_DG11J1_3A_TEMP_MIN = 18.0;
@@ -68,6 +77,7 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
   }
 
   void set_model(Model model) { this->model_ = model; }
+  void set_ifeel_mode(Mode mode) { this->ifeel_mode_ = mode; }
 
   // used to track when to send the power toggle command
   bool powered_on_assumed;
@@ -91,6 +101,7 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
 
   bool send_swing_cmd_{false};
   Model model_;
+  Mode ifeel_mode_;
   
   switch_::Switch *ir_transmitter_switch_ = nullptr;  // Switch to toggle IR mute on/off
   switch_::Switch *ifeel_switch_ = nullptr;  // Switch to toggle iFeel mode on/off

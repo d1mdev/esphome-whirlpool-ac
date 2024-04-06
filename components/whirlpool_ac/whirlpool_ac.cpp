@@ -146,7 +146,28 @@ void WhirlpoolAC::transmit_state() {
     }
   }
   
-  // Preset for iFeel
+  // iFeel
+  // Check value of ifeel_mode_
+  switch (this->ifeel_mode_) {
+    case OFF_ON:
+      ESP_LOGD(TAG, "Turning iFeel ON");
+      break;
+    case ON:
+      ESP_LOGD(TAG, "Ifeel mode active. Updating temp. ");
+      break;
+    case SWITCHING:
+      ESP_LOGD(TAG, "Switching iFeel. ");
+      break;
+    case ON_OFF:
+      ESP_LOGD(TAG, "Turning iFeel OFF. ");
+      break;
+    case OFF:
+      ESP_LOGD(TAG, "Ifeel mode os OFF. ");
+      break;
+    default:
+      ESP_LOGD(TAG, "No iFeel mode set. ");
+      break;
+  }
   if (this->ifeel_state_) {
     ESP_LOGD(TAG, "iFeel switch is ON. ");
     remote_state[11] = 0x80;
