@@ -37,14 +37,15 @@ void WhirlpoolAC::setup () {
     if (this->sensor_) {
       this->sensor_->add_on_state_callback([this](float state) {
         this->current_temperature = state;
+        this->on_current_temperature_update(state);
         // current temperature changed, publish state
         this->publish_state();
-        ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, delta - %d", (this->ifeel_start_time_ / 60000), (millis() - this->ifeel_start_time_) / 60000);
+/*         ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, delta - %d", (this->ifeel_start_time_ / 60000), (millis() - this->ifeel_start_time_) / 60000);
         if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 120000) && (abs(this->current_temperature - this->target_temperature) > 1) && this->powered_on_assumed) {
           ESP_LOGD(TAG, "Sending iFeel update. ");
           this->ifeel_start_time_ = millis();
           this->transmit_state();
-        }
+        } */
       });
       this->current_temperature = this->sensor_->state;
     } else
@@ -452,6 +453,10 @@ void WhirlpoolAC::on_ifeel_change(bool state) {
   } else {
     ESP_LOGV(TAG, "Turning off iFeel. ");
   } */
+}
+
+void on_current_temperature_update(float state) {
+  ESP_LOGD(TAG, "Get updates from sensor. ");
 }
 
 }  // namespace whirlpool_ac
