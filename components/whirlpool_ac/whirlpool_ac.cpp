@@ -459,7 +459,7 @@ void WhirlpoolAC::on_current_temperature_update(float state) {
   ESP_LOGD(TAG, "--------------------------------------------");
   ESP_LOGD(TAG, "Get updates from sensor. State is: %.1f", state);
   ESP_LOGD(TAG, "iFeel state is: %s", this->ifeel_state_ ? "ON" : "OFF");
-  ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, current - %d", (this->ifeel_start_time_ / 60000), (millis() / 60000);
+  ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, current - %d", (this->ifeel_start_time_ / 60000), (millis() / 60000));
   ESP_LOGD(TAG, "--------------------------------------------");
 }
 
