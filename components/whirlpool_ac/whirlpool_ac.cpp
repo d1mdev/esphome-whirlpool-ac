@@ -374,7 +374,7 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
   }
 
   // Set received iFeel status
-  if (remote_state[15] == 0x0D) {
+  if (remote_state[15] == 0x0D && remote_state[11] == 0x80) {
     ESP_LOGD(TAG, "iFeel toggle pressed on remote. ");
     if (remote_state[12] != 0x00) {
       int c_temp = remote_state[12];
@@ -388,6 +388,12 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
       ESP_LOGD(TAG, "Turning iFeel OFF. ");
       update_ifeel(false);
     }
+  }
+  if (remote_state[15] == 0x00 && remote_state[11] == 0x80) {
+    int c_temp = remote_state[12];
+    ESP_LOGD(TAG, "Received iFeel temp update from remote. Temp is %d:", c_temp);
+    this->current_temperature = c_temp;
+    update_ifeel(true);
   }
   this->publish_state();
   return true;
