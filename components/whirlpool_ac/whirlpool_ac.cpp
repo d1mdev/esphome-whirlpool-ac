@@ -499,7 +499,11 @@ void WhirlpoolAC::on_current_temperature_update(float state) {
   ESP_LOGD(TAG, "iFeel state is: %s", this->ifeel_state_ ? "ON" : "OFF");
   ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, current - %d", (this->ifeel_start_time_ / 60000), (millis() / 60000));
   ESP_LOGD(TAG, "--------------------------------------------");
+  if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 120000) && this->powered_on_assumed) {
+    ESP_LOGD(TAG, "Sending iFeel update. ");
+    this->ifeel_start_time_ = millis();
+    this->transmit_state();
+  }
 }
-
 }  // namespace whirlpool_ac
 }  // namespace esphome
