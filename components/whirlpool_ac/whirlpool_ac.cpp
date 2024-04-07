@@ -151,16 +151,37 @@ void WhirlpoolAC::transmit_state() {
   switch (this->ifeel_mode_) {
     case OFF_ON:
       ESP_LOGD(TAG, "Turning iFeel ON");
+      remote_state[15] = 0x0D;
+      remote_state[11] = 0x80;
+      if (!std::isnan(this->current_temperature)) {
+        ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+        remote_state[12] = roundf(this->current_temperature);
+      } else {
+        ESP_LOGD(TAG, "Sending target_temperature to AC. ");
+        remote_state[12] = this->target_temperature;
+      }
       set_ifeel_mode(ON);
       break;
     case ON:
-      ESP_LOGD(TAG, "Ifeel mode active. Updating temp. ");
+      ESP_LOGD(TAG, "Ifeel mode active. ");
       break;
-    case SWITCHING:
-      ESP_LOGD(TAG, "Switching iFeel. ");
+    case UPDATE:
+      ESP_LOGD(TAG, "Updating iFeel. ");
+      remote_state[11] = 0x80;
+      remote_state[15] = 0;
+      if (!std::isnan(this->current_temperature)) {
+        ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+        remote_state[12] = roundf(this->current_temperature);
+      } else {
+        ESP_LOGD(TAG, "Sending target_temperature to AC. ");
+        remote_state[12] = this->target_temperature;
+      }
+      set_ifeel_mode(ON);
       break;
     case ON_OFF:
       ESP_LOGD(TAG, "Turning iFeel OFF. ");
+      remote_state[15] = 0x0D;
+      remote_state[12] = 0;
       set_ifeel_mode(OFF);
       break;
     case OFF:
@@ -170,7 +191,7 @@ void WhirlpoolAC::transmit_state() {
       ESP_LOGD(TAG, "No iFeel mode set. ");
       break;
   }
-  if (this->ifeel_state_) {
+/*   if (this->ifeel_state_) {
     ESP_LOGD(TAG, "iFeel switch is ON. ");
     remote_state[11] = 0x80;
     if (!std::isnan(this->current_temperature)) {
@@ -184,7 +205,7 @@ void WhirlpoolAC::transmit_state() {
   if (this->ifeel_switching_) {
     remote_state[15] = 0x0D;
     this->ifeel_switching_ = false;
-  }
+  } */
 
 /*   switch (this->preset.value()) {
     case climate::CLIMATE_PRESET_NONE:
@@ -504,6 +525,7 @@ void WhirlpoolAC::on_current_temperature_update(float state) {
   if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 120000) && this->powered_on_assumed) {
     ESP_LOGD(TAG, "Sending iFeel update. ");
     this->ifeel_start_time_ = millis();
+    set_ifeel_mode(UPDATE);
     this->transmit_state();
   }
 }

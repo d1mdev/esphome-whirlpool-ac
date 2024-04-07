@@ -16,7 +16,7 @@ enum Model {
 enum Mode {
   OFF = 0,
   OFF_ON = 1,
-  SWITCHING = 2,
+  UPDATE = 2,
   ON_OFF = 3,
   ON = 4,
 };
