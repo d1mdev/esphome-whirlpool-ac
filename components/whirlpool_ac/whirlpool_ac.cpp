@@ -151,6 +151,7 @@ void WhirlpoolAC::transmit_state() {
   switch (this->ifeel_mode_) {
     case OFF_ON:
       ESP_LOGD(TAG, "Turning iFeel ON");
+      set_ifeel_mode(ON);
       break;
     case ON:
       ESP_LOGD(TAG, "Ifeel mode active. Updating temp. ");
@@ -160,9 +161,10 @@ void WhirlpoolAC::transmit_state() {
       break;
     case ON_OFF:
       ESP_LOGD(TAG, "Turning iFeel OFF. ");
+      set_ifeel_mode(OFF);
       break;
     case OFF:
-      ESP_LOGD(TAG, "Ifeel mode os OFF. ");
+      ESP_LOGD(TAG, "Ifeel mode is OFF. ");
       break;
     default:
       ESP_LOGD(TAG, "No iFeel mode set. ");
