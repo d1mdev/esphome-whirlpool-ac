@@ -468,6 +468,13 @@ void WhirlpoolAC::on_ir_transmitter_change(bool state) {
 void WhirlpoolAC::on_ifeel_change(bool state) {
   ESP_LOGD(TAG, "on_ifeel_change. ");
   this->ifeel_state_ = state;
+  if (state) {
+    ESP_LOGV(TAG, "Turning on iFeel. ");
+    set_ifeel_mode(OFF_ON);
+  } else {
+    ESP_LOGV(TAG, "Turning off iFeel. ");
+    set_ifeel_mode(ON_OFF);
+  }
   if (this->powered_on_assumed) {
     this->ifeel_switching_ = true;
     this->ifeel_start_time_ = millis();
@@ -479,8 +486,10 @@ void WhirlpoolAC::on_ifeel_change(bool state) {
   this->ifeel_switching_ = true;
   if (state) {
     ESP_LOGV(TAG, "Turning on iFeel. ");
+    set_ifeel_mode(OFF_ON);
   } else {
     ESP_LOGV(TAG, "Turning off iFeel. ");
+    set_ifeel_mode(ON_OFF);
   } */
 }
 
