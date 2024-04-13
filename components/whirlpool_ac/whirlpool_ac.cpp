@@ -168,6 +168,7 @@ void WhirlpoolAC::transmit_state() {
       break;
     case UPDATE:
       ESP_LOGD(TAG, "Updating iFeel. ");
+      remote_state[6] = 0;
       remote_state[11] = 0x80;
       remote_state[15] = 0;
       if (!std::isnan(this->current_temperature)) {
