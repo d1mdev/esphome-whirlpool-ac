@@ -151,9 +151,7 @@ void WhirlpoolAC::transmit_state() {
   switch (this->ifeel_mode_) {
     case OFF_ON:
       ESP_LOGD(TAG, "Turning iFeel ON");
-      if (remote_state[15] != 1) {
-        remote_state[15] = 0x0D;
-      }
+      remote_state[15] = 0x0D;
       remote_state[11] = 0x80;
       if (!std::isnan(this->current_temperature)) {
         ESP_LOGD(TAG, "Sending current_temperature to AC. ");
