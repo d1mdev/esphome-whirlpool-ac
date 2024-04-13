@@ -455,6 +455,7 @@ void WhirlpoolAC::update_ir_transmitter(bool ir_transmitter) {
   }
 }
 
+// When received command from remote
 void WhirlpoolAC::update_ifeel(bool ifeel) {
   if (this->ifeel_switch_ != nullptr) {
     ESP_LOGD(TAG, "update_ifeel. ");
@@ -494,19 +495,27 @@ void WhirlpoolAC::on_ir_transmitter_change(bool state) {
 void WhirlpoolAC::on_ifeel_change(bool state) {
   ESP_LOGD(TAG, "on_ifeel_change. ");
   this->ifeel_state_ = state;
-  if (state) {
-    ESP_LOGV(TAG, "Turning on iFeel. ");
-    set_ifeel_mode(OFF_ON);
-  } else {
-    ESP_LOGV(TAG, "Turning off iFeel. ");
-    set_ifeel_mode(ON_OFF);
-  }
+
   if (this->powered_on_assumed) {
-    this->ifeel_switching_ = true;
-    this->ifeel_start_time_ = millis();
+//    this->ifeel_switching_ = true;
+    if (state) {
+      ESP_LOGV(TAG, "Turning on iFeel. ");
+      set_ifeel_mode(OFF_ON);
+      this->ifeel_start_time_ = millis();
+    } else {
+      ESP_LOGV(TAG, "Turning off iFeel. ");
+      set_ifeel_mode(ON_OFF);
+    }
     this->transmit_state();
   } else {
-    ESP_LOGD(TAG, "No switch activity while AC is OFF. ");
+    if (state) {
+      ESP_LOGV(TAG, "Turning on iFeel offline. ");
+      set_ifeel_mode(ON);
+      this->ifeel_start_time_ = millis();
+    } else {
+      ESP_LOGV(TAG, "Turning off iFeel offline. ");
+      set_ifeel_mode(OFF);
+    }
   }
 /*   this->ifeel_state_ = state;
   this->ifeel_switching_ = true;
