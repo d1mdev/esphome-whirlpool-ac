@@ -431,7 +431,7 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
       update_ifeel(true);
     } else {
       ESP_LOGD(TAG, "iFeel - Turned OFF from remote. ");
-      set_ifeel_mode(OFF)
+      set_ifeel_mode(OFF);
       update_ifeel(false);
     }
   }
