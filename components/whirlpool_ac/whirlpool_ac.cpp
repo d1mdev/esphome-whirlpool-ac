@@ -189,6 +189,9 @@ void WhirlpoolAC::transmit_state() {
     case OFF:
       ESP_LOGD(TAG, "Ifeel mode is OFF. ");
       break;
+    case REMOTE_CONTROLLED:
+      ESP_LOGD(TAG, "Controlled from remote. Nothing to do. ");
+      break;
     default:
       ESP_LOGD(TAG, "No iFeel mode set. ");
       break;
@@ -429,7 +432,7 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
         this->current_temperature = c_temp;
         ESP_LOGD(TAG, "Setting current_temperature from remote. ");
       }
-      set_ifeel_mode(OFF_ON);
+      set_ifeel_mode(ON);
       update_ifeel(true);
     } else {
       ESP_LOGD(TAG, "Turning iFeel OFF. ");

@@ -14,11 +14,12 @@ enum Model {
 
 /// Simple enum to represent internal states of iFeel mode.
 enum Mode {
-  OFF = 0,
-  OFF_ON = 1,
-  UPDATE = 2,
-  ON_OFF = 3,
-  ON = 4,
+  OFF = 1,
+  OFF_ON = 2,
+  UPDATE = 3,
+  ON_OFF = 4,
+  ON = 5,
+  REMOTE_CONTROLLED = 6,
 };
 
 // Temperature
