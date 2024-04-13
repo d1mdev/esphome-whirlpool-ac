@@ -277,7 +277,7 @@ void WhirlpoolAC::transmit_state() {
     ESP_LOGD(TAG, "Detected transmitter MUTE switch. ");
   }
   ESP_LOGD(TAG, "TRANSMITTER IS %s. ", this->ir_transmitter_state_ ? "ON" : "OFF");
-  ESP_LOGD(TAG, "ifeel_mode_ is: %s. ", this->ifeel_mode_);
+  ESP_LOGD(TAG, "ifeel_mode_ is: %d. ", this->ifeel_mode_);
   if (this->ir_transmitter_state_) {
     transmit.perform();
   }
