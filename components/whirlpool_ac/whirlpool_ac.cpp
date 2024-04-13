@@ -427,11 +427,8 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
     ESP_LOGD(TAG, "iFeel toggle pressed on remote. ");
     if (remote_state[11] == 0x80) {
       ESP_LOGD(TAG, "iFeel - Turned ON from remote. ");
-      if (!std::isnan(this->current_temperature)) {
-        ESP_LOGD(TAG, "Current temperature sensor not ready. ");
-        int c_temp = remote_state[12];
-        this->current_temperature = c_temp;
-      }
+      int c_temp = remote_state[12];
+      this->current_temperature = c_temp;
       set_ifeel_mode(REMOTE_CONTROLLED);
       update_ifeel(true);
     } else {
