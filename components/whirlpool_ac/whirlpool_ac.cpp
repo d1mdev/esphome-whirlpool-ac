@@ -78,7 +78,8 @@ void WhirlpoolAC::transmit_state() {
   remote_state[1] = 0x06;
   remote_state[6] = 0x80;
   // MODEL DG11J191
-  remote_state[18] = 0x08;
+  //remote_state[18] = 0x08;
+  remote_state[18] = ((model_ == MODEL_DG11J1_3A) ? 0x08 : 0x38);
 
   auto powered_on = this->mode != climate::CLIMATE_MODE_OFF;
   if (powered_on != this->powered_on_assumed) {
