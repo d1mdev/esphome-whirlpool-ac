@@ -32,13 +32,57 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
-void WhirlpoolClimateAC::transmit_state() {
+// iFeel update interval - 5 min (60 000 * 5)
+const int32_t WHIRLPOOL_IFEEL_UPDATE_INTERVAL = 300000;
+
+void WhirlpoolAC::setup () {
+//    climate_ir::ClimateIR::setup();
+    if (this->sensor_) {
+      this->sensor_->add_on_state_callback([this](float state) {
+        this->current_temperature = state;
+        this->on_current_temperature_update(state);
+        // current temperature changed, publish state
+        this->publish_state();
+/*         ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, delta - %d", (this->ifeel_start_time_ / 60000), (millis() - this->ifeel_start_time_) / 60000);
+        if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > 120000) && (abs(this->current_temperature - this->target_temperature) > 1) && this->powered_on_assumed) {
+          ESP_LOGD(TAG, "Sending iFeel update. ");
+          this->ifeel_start_time_ = millis();
+          this->transmit_state();
+        } */
+      });
+      this->current_temperature = this->sensor_->state;
+    } else
+      this->current_temperature = NAN;
+    // restore set points
+    auto restore = this->restore_state_();
+    if (restore.has_value()) {
+      restore->apply(this);
+    } else {
+      // restore from defaults
+      this->mode = climate::CLIMATE_MODE_OFF;
+      // initialize target temperature to some value so that it's not NAN
+      this->target_temperature =
+        roundf(clamp(this->current_temperature, this->minimum_temperature_, this->maximum_temperature_));
+      this->fan_mode = climate::CLIMATE_FAN_AUTO;
+      this->swing_mode = climate::CLIMATE_SWING_OFF;
+      this->preset = climate::CLIMATE_PRESET_NONE;
+    }
+    // Never send nan to HA
+    if (std::isnan(this->target_temperature))
+      this->target_temperature = 24;
+
+      this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+  }
+
+void WhirlpoolAC::transmit_state() {
+  this->last_transmit_time_ = millis();  // setting the time of the last transmission.
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   remote_state[0] = 0x83;
   remote_state[1] = 0x06;
   remote_state[6] = 0x80;
   // MODEL DG11J191
   remote_state[18] = 0x08;
+  //remote_state[18] = ((model_ == MODEL_DG11J1_3A) ? 0x08 : 0x38);
 
   auto powered_on = this->mode != climate::CLIMATE_MODE_OFF;
   if (powered_on != this->powered_on_assumed) {
@@ -72,6 +116,8 @@ void WhirlpoolClimateAC::transmit_state() {
       remote_state[15] = 6;
       break;
     case climate::CLIMATE_MODE_OFF:
+//      this->update_ifeel(false);
+//      break;
     default:
       break;
   }
@@ -103,6 +149,91 @@ void WhirlpoolClimateAC::transmit_state() {
       remote_state[8] |= 64;
     }
   }
+  
+  // iFeel
+  // Check value of ifeel_mode_
+  switch (this->ifeel_mode_) {
+    case OFF_ON:
+      ESP_LOGD(TAG, "Turning iFeel ON");
+      remote_state[15] = 0x0D;
+      remote_state[11] = 0x80;
+      if (!std::isnan(this->current_temperature)) {
+        ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+        remote_state[12] = roundf(this->current_temperature);
+      } else {
+        ESP_LOGD(TAG, "Sending target_temperature to AC. ");
+        remote_state[12] = this->target_temperature;
+      }
+      set_ifeel_mode(ON);
+      break;
+    case ON:
+      ESP_LOGD(TAG, "Ifeel mode active. ");
+      break;
+    case UPDATE:
+      ESP_LOGD(TAG, "Updating iFeel. ");
+      remote_state[6] = 0;
+      remote_state[11] = 0x80;
+      remote_state[15] = 0;
+      if (!std::isnan(this->current_temperature)) {
+        ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+        remote_state[12] = roundf(this->current_temperature);
+      } else {
+        ESP_LOGD(TAG, "Sending target_temperature to AC. ");
+        remote_state[12] = this->target_temperature;
+      }
+      set_ifeel_mode(ON);
+      break;
+    case ON_OFF:
+      ESP_LOGD(TAG, "Turning iFeel OFF. ");
+      remote_state[15] = 0x0D;
+      remote_state[12] = 0;
+      set_ifeel_mode(OFF);
+      break;
+    case OFF:
+      ESP_LOGD(TAG, "Ifeel mode is OFF. ");
+      break;
+    case REMOTE_CONTROLLED:
+      ESP_LOGD(TAG, "Controlled from remote. Nothing to do. ");
+      break;
+    default:
+      ESP_LOGD(TAG, "No iFeel mode set. ");
+      break;
+  }
+/*   if (this->ifeel_state_) {
+    ESP_LOGD(TAG, "iFeel switch is ON. ");
+    remote_state[11] = 0x80;
+    if (!std::isnan(this->current_temperature)) {
+      ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+      remote_state[12] = roundf(this->current_temperature);
+    } else {
+      ESP_LOGD(TAG, "Sending target_temperature to AC. ");
+      remote_state[12] = this->target_temperature;
+    }
+  }
+  if (this->ifeel_switching_) {
+    remote_state[15] = 0x0D;
+    this->ifeel_switching_ = false;
+  } */
+
+/*   switch (this->preset.value()) {
+    case climate::CLIMATE_PRESET_NONE:
+      ESP_LOGD(TAG, "Asking for preset: NONE");
+      break;
+    case climate::CLIMATE_PRESET_ACTIVITY:
+      // Только в режимах COOL, HEAT и HEAT_COOL
+      // this->current_temperature != this->target_temperature - разница в температурах больше 2 град
+      if ((this->mode == climate::CLIMATE_MODE_HEAT_COOL || this->mode == climate::CLIMATE_MODE_COOL || this->mode == climate::CLIMATE_MODE_HEAT) && !std::isnan(this->current_temperature)) {
+        ESP_LOGD(TAG, "Asking for preset: ACTIVITY ");
+        remote_state[15] = 0x0D;
+        remote_state[12] = roundf(this->current_temperature);
+      } else {
+        ESP_LOGD(TAG, "Preset disabled ");
+        this->preset = climate::CLIMATE_PRESET_NONE;
+      }
+      break;
+    default:
+      break;
+  } */
 
   // Checksum
   for (uint8_t i = 2; i < 13; i++)
@@ -110,7 +241,7 @@ void WhirlpoolClimateAC::transmit_state() {
   for (uint8_t i = 14; i < 20; i++)
     remote_state[20] ^= remote_state[i];
 
-  ESP_LOGV(TAG,
+  ESP_LOGD(TAG,
            "Sending: %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X "
            "%02X %02X   %02X",
            remote_state[0], remote_state[1], remote_state[2], remote_state[3], remote_state[4], remote_state[5],
@@ -145,20 +276,22 @@ void WhirlpoolClimateAC::transmit_state() {
   // Footer
   data->mark(WHIRLPOOL_BIT_MARK);
 
-  if (this->ir_transmitter_mute_ != nullptr) {
-    ESP_LOGD(TAG, "Detected external MUTE sensor");
+  if (this->ir_transmitter_switch_ != nullptr) {
+    ESP_LOGD(TAG, "Detected transmitter MUTE switch. ");
   }
-  ESP_LOGD(TAG, "TRANSMITTER MUTE IS %s", this->ir_transmitter_muted ? "true" : "false");
-  
-  this->last_ir_sent_ = millis();
-  ESP_LOGD(TAG, "IR SENT millis - %d", this->last_ir_sent_);
-  
-  if (!this->ir_transmitter_muted) {
+  ESP_LOGD(TAG, "TRANSMITTER IS %s. ", this->ir_transmitter_state_ ? "ON" : "OFF");
+  ESP_LOGD(TAG, "ifeel_mode_ is: %d. ", this->ifeel_mode_);
+  if (this->ir_transmitter_state_) {
     transmit.perform();
   }
 }
 
-bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
+bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
+  // Check if the esp isn't currently transmitting
+  if (millis() - this->last_transmit_time_ < 500) {
+    ESP_LOGV(TAG, "Blocked receive because of current transmission");
+    return false;
+  }
   
   // Validate header
   if (!data.expect_item(WHIRLPOOL_HEADER_MARK, WHIRLPOOL_HEADER_SPACE)) {
@@ -166,16 +299,6 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
     return false;
   }
   
-  this->last_ir_received_ = millis();
-  ESP_LOGD(TAG, "IR SENT millis - %d", this->last_ir_received_);
-  int diff_time = this->last_ir_received_ - this->last_ir_sent_;
-  ESP_LOGD(TAG, "DIFF - %d", ::abs(diff_time));
-  // Try to add comparition between sent data and received data packets
-  if (::abs(diff_time) < 1000) {
-    ESP_LOGD(TAG, "DIFF less than 1 second - %d", ::abs(diff_time));
-    return false;
-  }
-
   uint8_t remote_state[WHIRLPOOL_STATE_LENGTH] = {0};
   // Read all bytes.
   for (int i = 0; i < WHIRLPOOL_STATE_LENGTH; i++) {
@@ -215,7 +338,7 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
     return false;
   }
 
-  ESP_LOGV(
+  ESP_LOGD(
       TAG,
       "Received: %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X %02X %02X   %02X %02X "
       "%02X %02X   %02X",
@@ -302,9 +425,124 @@ bool WhirlpoolClimateAC::on_receive(remote_base::RemoteReceiveData data) {
     }
   }
 
+  // Set received iFeel status
+  if (remote_state[15] == 0x0D) {
+    ESP_LOGD(TAG, "iFeel toggle pressed on remote. ");
+    if (remote_state[11] == 0x80) {
+      ESP_LOGD(TAG, "iFeel - Turned ON from remote. ");
+      int c_temp = remote_state[12];
+      this->current_temperature = c_temp;
+      set_ifeel_mode(REMOTE_CONTROLLED);
+      update_ifeel(true);
+    } else {
+      ESP_LOGD(TAG, "iFeel - Turned OFF from remote. ");
+      set_ifeel_mode(OFF);
+      update_ifeel(false);
+    }
+  }
+  if (remote_state[15] == 0x00 && remote_state[11] == 0x80) {
+    int c_temp = remote_state[12];
+    ESP_LOGD(TAG, "Received iFeel temp update from remote. Temp is %d:", c_temp);
+    this->current_temperature = c_temp;
+    set_ifeel_mode(REMOTE_CONTROLLED);
+    update_ifeel(true);
+  }
   this->publish_state();
   return true;
 }
 
+void WhirlpoolAC::update_ir_transmitter(bool ir_transmitter) {
+  if (this->ir_transmitter_switch_ != nullptr) {
+    this->ir_transmitter_state_ = ir_transmitter;
+    this->ir_transmitter_switch_->publish_state(this->ir_transmitter_state_);
+  }
+}
+
+// When received command from remote
+void WhirlpoolAC::update_ifeel(bool ifeel) {
+  if (this->ifeel_switch_ != nullptr) {
+    ESP_LOGD(TAG, "update_ifeel. ");
+    this->ifeel_state_ = ifeel;
+    this->ifeel_switch_->publish_state(this->ifeel_state_);
+  }
+}
+
+void WhirlpoolAC::set_ir_transmitter_switch(switch_::Switch *ir_transmitter_switch) {
+  this->ir_transmitter_switch_ = ir_transmitter_switch;
+  this->ir_transmitter_switch_->add_on_state_callback([this](bool state) {
+    if (state == this->ir_transmitter_state_)
+      return;
+    this->on_ir_transmitter_change(state);
+  });
+}
+
+void WhirlpoolAC::set_ifeel_switch(switch_::Switch *ifeel_switch) {
+  this->ifeel_switch_ = ifeel_switch;
+  this->ifeel_switch_->add_on_state_callback([this](bool state) {
+    if (state == this->ifeel_state_)
+      return;
+    ESP_LOGD(TAG, "set_ifeel_switch. ");
+    this->on_ifeel_change(state);
+  });
+}
+
+void WhirlpoolAC::on_ir_transmitter_change(bool state) {
+  this->ir_transmitter_state_ = state;
+  if (state) {
+    ESP_LOGV(TAG, "Turning on IR transmitter. ");
+  } else {
+    ESP_LOGV(TAG, "Turning off IR transmitter. ");
+  }
+}
+
+void WhirlpoolAC::on_ifeel_change(bool state) {
+  ESP_LOGD(TAG, "on_ifeel_change. ");
+  this->ifeel_state_ = state;
+
+  if (this->powered_on_assumed) {
+//    this->ifeel_switching_ = true;
+    if (state) {
+      ESP_LOGV(TAG, "Turning on iFeel. ");
+      set_ifeel_mode(OFF_ON);
+      this->ifeel_start_time_ = millis();
+    } else {
+      ESP_LOGV(TAG, "Turning off iFeel. ");
+      set_ifeel_mode(ON_OFF);
+    }
+    this->transmit_state();
+  } else {
+    if (state) {
+      ESP_LOGV(TAG, "Turning on iFeel offline. ");
+      set_ifeel_mode(ON);
+      this->ifeel_start_time_ = millis();
+    } else {
+      ESP_LOGV(TAG, "Turning off iFeel offline. ");
+      set_ifeel_mode(OFF);
+    }
+  }
+/*   this->ifeel_state_ = state;
+  this->ifeel_switching_ = true;
+  if (state) {
+    ESP_LOGV(TAG, "Turning on iFeel. ");
+    set_ifeel_mode(OFF_ON);
+  } else {
+    ESP_LOGV(TAG, "Turning off iFeel. ");
+    set_ifeel_mode(ON_OFF);
+  } */
+}
+
+void WhirlpoolAC::on_current_temperature_update(float state) {
+  ESP_LOGD(TAG, "--------------------------------------------");
+  ESP_LOGD(TAG, "Get updates from sensor. State is: %.1f", state);
+  ESP_LOGD(TAG, "iFeel state is: %s", this->ifeel_state_ ? "ON" : "OFF");
+  ESP_LOGD(TAG, "ifeel_start_time_ (mins) - %d, current - %d", (this->ifeel_start_time_ / 60000), (millis() / 60000));
+  ESP_LOGD(TAG, "--------------------------------------------");
+  if (this->ifeel_state_ && (millis() - this->ifeel_start_time_ > WHIRLPOOL_IFEEL_UPDATE_INTERVAL) && this->powered_on_assumed) {
+    ESP_LOGD(TAG, "Sending iFeel update. ");
+    this->ifeel_start_time_ = millis();
+    set_ifeel_mode(UPDATE);
+    this->transmit_state();
+  }
+}
 }  // namespace whirlpool_ac
 }  // namespace esphome
