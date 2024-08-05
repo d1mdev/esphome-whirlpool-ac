@@ -32,8 +32,8 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
-// iFeel update interval - 5 min (60 000 * 5)
-const int32_t WHIRLPOOL_IFEEL_UPDATE_INTERVAL = 300000;
+// iFeel update interval - 3 min (60 000 * 3)
+const int32_t WHIRLPOOL_IFEEL_UPDATE_INTERVAL = 180000;
 
 void WhirlpoolAC::setup () {
 //    climate_ir::ClimateIR::setup();
@@ -176,7 +176,7 @@ void WhirlpoolAC::transmit_state() {
       remote_state[15] = 0;
       if (!std::isnan(this->current_temperature)) {
         ESP_LOGD(TAG, "Sending current_temperature to AC. ");
-        remote_state[12] = roundf(this->current_temperature);
+        remote_state[12] = round(this->current_temperature - 0.1);
       } else {
         ESP_LOGD(TAG, "Sending target_temperature to AC. ");
         remote_state[12] = this->target_temperature;
