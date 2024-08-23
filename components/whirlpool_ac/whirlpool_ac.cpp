@@ -450,7 +450,7 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
   return true;
 }
 
-uint8_t get_current_temp() {
+uint8_t WhirlpoolAC::get_current_temp() {
   if (!std::isnan(this->current_temperature)) {
     ESP_LOGD(TAG, "Sending current_temperature to AC. ");
     return round(this->current_temperature - 0.1);
