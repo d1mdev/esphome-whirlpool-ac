@@ -73,7 +73,10 @@ void WhirlpoolAC::setup () {
     if (std::isnan(this->target_temperature))
       this->target_temperature = 24;
 
-      this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+    this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+    if (!ifeel_state_)
+      this->ifeel_mode_ = Mode::OFF;
+
   }
 
 void WhirlpoolAC::transmit_state() {
