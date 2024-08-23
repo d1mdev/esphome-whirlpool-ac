@@ -162,26 +162,14 @@ void WhirlpoolAC::transmit_state() {
     case ON:
       ESP_LOGD(TAG, "Ifeel mode active. ");
       remote_state[11] = 0x80;
-      if (!std::isnan(this->current_temperature)) {
-        ESP_LOGD(TAG, "Sending current_temperature to AC. ");
-        remote_state[12] = round(this->current_temperature - 0.1);
-      } else {
-        ESP_LOGD(TAG, "Sending target_temperature to AC. ");
-        remote_state[12] = this->target_temperature;
-      }
+      remote_state[12] = get_current_temp();
       break;
     case UPDATE:
       ESP_LOGD(TAG, "Updating iFeel. ");
       remote_state[6] = 0;
       remote_state[11] = 0x80;
       remote_state[15] = 0;
-      if (!std::isnan(this->current_temperature)) {
-        ESP_LOGD(TAG, "Sending current_temperature to AC. ");
-        remote_state[12] = round(this->current_temperature - 0.1);
-      } else {
-        ESP_LOGD(TAG, "Sending target_temperature to AC. ");
-        remote_state[12] = this->target_temperature;
-      }
+      remote_state[12] = get_current_temp();
       set_ifeel_mode(ON);
       break;
     case ON_OFF:
@@ -460,6 +448,17 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
   }
   this->publish_state();
   return true;
+}
+
+uint8_t get_current_temp() {
+  if (!std::isnan(this->current_temperature)) {
+    ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+    return round(this->current_temperature - 0.1);
+  }
+  else {
+    ESP_LOGD(TAG, "Sending target_temperature to AC. ");
+    return this->target_temperature;
+  }
 }
 
 void WhirlpoolAC::update_ir_transmitter(bool ir_transmitter) {

@@ -91,6 +91,7 @@ class WhirlpoolAC : public climate_ir::ClimateIR {
   void transmit_state() override;
   /// Handle received IR Buffer
   bool on_receive(remote_base::RemoteReceiveData data) override;
+  uint8_t get_current_temp();
   /// Stores the state of switch to prevent duplicate packets
   bool ir_transmitter_state_ = false;
   bool ifeel_state_ = false;
