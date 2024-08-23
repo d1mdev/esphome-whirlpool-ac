@@ -66,6 +66,8 @@ void WhirlpoolAC::setup () {
       this->fan_mode = climate::CLIMATE_FAN_AUTO;
       this->swing_mode = climate::CLIMATE_SWING_OFF;
       this->preset = climate::CLIMATE_PRESET_NONE;
+      this->ifeel_mode_ = Mode::OFF;
+      this->ifeel_state_ = false;
     }
     // Never send nan to HA
     if (std::isnan(this->target_temperature))
