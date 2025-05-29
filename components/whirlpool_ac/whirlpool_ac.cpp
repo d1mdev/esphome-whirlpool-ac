@@ -115,8 +115,9 @@ void WhirlpoolAC::transmit_state() {
       break;
     case climate::CLIMATE_MODE_OFF:
       remote_state[18] = 0x28;
-//      this->update_ifeel(false);
-//      break;
+      this->update_ifeel(false);
+      set_ifeel_mode(OFF);
+      break;
     default:
       break;
   }
