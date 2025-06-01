@@ -32,8 +32,8 @@ const uint8_t WHIRLPOOL_SWING_MASK = 128;
 
 const uint8_t WHIRLPOOL_POWER = 0x04;
 
-// iFeel update interval - 5 min (60 000 * 5)
-const int32_t WHIRLPOOL_IFEEL_UPDATE_INTERVAL = 300000;
+// iFeel update interval - 3 min (60 000 * 3)
+const int32_t WHIRLPOOL_IFEEL_UPDATE_INTERVAL = 180000;
 
 void WhirlpoolAC::setup () {
 //    climate_ir::ClimateIR::setup();
@@ -66,12 +66,17 @@ void WhirlpoolAC::setup () {
       this->fan_mode = climate::CLIMATE_FAN_AUTO;
       this->swing_mode = climate::CLIMATE_SWING_OFF;
       this->preset = climate::CLIMATE_PRESET_NONE;
+      this->ifeel_mode_ = Mode::OFF;
+      this->ifeel_state_ = false;
     }
     // Never send nan to HA
     if (std::isnan(this->target_temperature))
       this->target_temperature = 24;
 
-      this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+    this->powered_on_assumed = this->mode != climate::CLIMATE_MODE_OFF;
+    if (!ifeel_state_)
+      this->ifeel_mode_ = Mode::OFF;
+
   }
 
 void WhirlpoolAC::transmit_state() {
@@ -81,16 +86,9 @@ void WhirlpoolAC::transmit_state() {
   remote_state[1] = 0x06;
   remote_state[6] = 0x80;
   // MODEL DG11J191
-  remote_state[18] = 0x08;
-  //remote_state[18] = ((model_ == MODEL_DG11J1_3A) ? 0x08 : 0x38);
+  //remote_state[18] = 0x08;
+  remote_state[18] = ((model_ == MODEL_DG11J1_3A) ? 0x08 : 0x38);
 
-  auto powered_on = this->mode != climate::CLIMATE_MODE_OFF;
-  if (powered_on != this->powered_on_assumed) {
-    // Set power toggle command
-    remote_state[2] = 4;
-    remote_state[15] = 1;
-    this->powered_on_assumed = powered_on;
-  }
   switch (this->mode) {
     case climate::CLIMATE_MODE_HEAT_COOL:
       // set fan auto
@@ -116,8 +114,10 @@ void WhirlpoolAC::transmit_state() {
       remote_state[15] = 6;
       break;
     case climate::CLIMATE_MODE_OFF:
-//      this->update_ifeel(false);
-//      break;
+      remote_state[18] = 0x28;
+      this->update_ifeel(false);
+      set_ifeel_mode(OFF);
+      break;
     default:
       break;
   }
@@ -168,19 +168,15 @@ void WhirlpoolAC::transmit_state() {
       break;
     case ON:
       ESP_LOGD(TAG, "Ifeel mode active. ");
+      remote_state[11] = 0x80;
+      remote_state[12] = get_current_temp();
       break;
     case UPDATE:
       ESP_LOGD(TAG, "Updating iFeel. ");
       remote_state[6] = 0;
       remote_state[11] = 0x80;
       remote_state[15] = 0;
-      if (!std::isnan(this->current_temperature)) {
-        ESP_LOGD(TAG, "Sending current_temperature to AC. ");
-        remote_state[12] = roundf(this->current_temperature);
-      } else {
-        ESP_LOGD(TAG, "Sending target_temperature to AC. ");
-        remote_state[12] = this->target_temperature;
-      }
+      remote_state[12] = get_current_temp();
       set_ifeel_mode(ON);
       break;
     case ON_OFF:
@@ -199,6 +195,16 @@ void WhirlpoolAC::transmit_state() {
       ESP_LOGD(TAG, "No iFeel mode set. ");
       break;
   }
+
+  auto powered_on = this->mode != climate::CLIMATE_MODE_OFF;
+  if (powered_on != this->powered_on_assumed) {
+    // Set power toggle command
+    remote_state[2] = 4;
+    remote_state[15] = 1;
+    this->powered_on_assumed = powered_on;
+    this->ifeel_start_time_ = millis();
+  }
+
 /*   if (this->ifeel_state_) {
     ESP_LOGD(TAG, "iFeel switch is ON. ");
     remote_state[11] = 0x80;
@@ -449,6 +455,17 @@ bool WhirlpoolAC::on_receive(remote_base::RemoteReceiveData data) {
   }
   this->publish_state();
   return true;
+}
+
+uint8_t WhirlpoolAC::get_current_temp() {
+  if (!std::isnan(this->current_temperature)) {
+    ESP_LOGD(TAG, "Sending current_temperature to AC. ");
+    return round(this->current_temperature - 0.1);
+  }
+  else {
+    ESP_LOGD(TAG, "Sending target_temperature to AC. ");
+    return this->target_temperature;
+  }
 }
 
 void WhirlpoolAC::update_ir_transmitter(bool ir_transmitter) {
