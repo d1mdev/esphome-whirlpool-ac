@@ -22,13 +22,12 @@ MODELS = {
 CONF_IR_TRANSMITTER_SWITCH = "ir_transmitter_switch"
 CONF_IFEEL_SWITCH = "ifeel_switch"
 
-SWITCH_SCHEMA = switch.switch_schema.extend(cv.COMPONENT_SCHEMA).extend(
+SWITCH_SCHEMA = switch.switch_schema(WhirlpoolACSwitch).extend(cv.COMPONENT_SCHEMA).extend(
     {cv.GenerateID(): cv.declare_id(WhirlpoolACSwitch)}
 )
 
-CONFIG_SCHEMA = climate_ir.climate_ir_with_receiver_schema.extend(
+CONFIG_SCHEMA = climate_ir.climate_ir_with_receiver_schema(WhirlpoolAC).extend(
     {
-        cv.GenerateID(): cv.declare_id(WhirlpoolAC),
         cv.Optional(CONF_MODEL, default="DG11J1-3A"): cv.enum(MODELS, upper=True),
         cv.Optional(CONF_IR_TRANSMITTER_SWITCH): SWITCH_SCHEMA,
         cv.Optional(CONF_IFEEL_SWITCH): SWITCH_SCHEMA,
