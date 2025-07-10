@@ -22,11 +22,11 @@ MODELS = {
 CONF_IR_TRANSMITTER_SWITCH = "ir_transmitter_switch"
 CONF_IFEEL_SWITCH = "ifeel_switch"
 
-SWITCH_SCHEMA = switch.SWITCH_SCHEMA.extend(cv.COMPONENT_SCHEMA).extend(
+SWITCH_SCHEMA = switch.switch_schema.extend(cv.COMPONENT_SCHEMA).extend(
     {cv.GenerateID(): cv.declare_id(WhirlpoolACSwitch)}
 )
 
-CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
+CONFIG_SCHEMA = climate_ir.climate_ir_with_receiver_schema.extend(
     {
         cv.GenerateID(): cv.declare_id(WhirlpoolAC),
         cv.Optional(CONF_MODEL, default="DG11J1-3A"): cv.enum(MODELS, upper=True),
@@ -36,8 +36,7 @@ CONFIG_SCHEMA = climate_ir.CLIMATE_IR_WITH_RECEIVER_SCHEMA.extend(
 )
 
 async def to_code(config):
-    var = cg.new_Pvariable(config[CONF_ID])
-    await climate_ir.register_climate_ir(var, config)
+    var = await climate_ir.new_climate_ir(config)
     cg.add(var.set_model(config[CONF_MODEL]))
     for s in [CONF_IR_TRANSMITTER_SWITCH, CONF_IFEEL_SWITCH]:
         if s in config:
