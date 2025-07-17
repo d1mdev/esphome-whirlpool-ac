@@ -112,6 +112,8 @@ void WhirlpoolAC::transmit_state() {
     case climate::CLIMATE_MODE_FAN_ONLY:
       remote_state[3] = WHIRLPOOL_FAN;
       remote_state[15] = 6;
+      this->update_ifeel(false);
+      set_ifeel_mode(OFF);
       break;
     case climate::CLIMATE_MODE_OFF:
       remote_state[18] = 0x28;
